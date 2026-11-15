@@ -4,8 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="color-scheme" content="light" />
-  <title>Lifelines — Lehi’s Family (v1.8)</title>
-  <!-- lifelines build v1.8 -->
+  <title>Lifelines — Lehi’s Family (v1.9)</title>
+  <!-- lifelines build v1.9 -->
   <style>
     :root {
       --bg: #f3eadc;
@@ -51,7 +51,9 @@
     }
     #app {
       height: 100%;
-      min-height: 100dvh;
+      height: 100dvh;
+      min-height: 0;
+      padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
       display: flex;
       flex-direction: column;
       overflow: hidden;
@@ -281,6 +283,12 @@
       paint-order: stroke; stroke: rgba(251,246,238,0.9); stroke-width: 8px; stroke-linejoin: round;
     }
     #world .lehi-italic { font-style: italic; }
+    #world .tree-name {
+      font-family: Georgia, serif; font-size: 18px; fill: var(--ink);
+      paint-order: stroke; stroke: rgba(251,246,238,0.92); stroke-width: 5px; stroke-linejoin: round;
+    }
+    #world .tree-names { transition: opacity 0.35s ease; }
+    #world .tree-names.is-morphing { opacity: 0; }
     #world .lehi-banner {
       font-family: "Segoe UI", system-ui, sans-serif; font-size: 30px; font-weight: 700;
       letter-spacing: 0.06em; fill: var(--accent);
@@ -515,6 +523,73 @@
       .btn { min-height: 40px; }
       .disclaimer { text-align: left; }
     }
+    .rotate-hint { display: none; }
+    /* Phones in landscape (short screens): give the stage nearly everything. */
+    @media (orientation: landscape) and (max-height: 520px) {
+      #overlay {
+        padding: 4px 12px 3px;
+        gap: 0 10px;
+        background: none;
+        cursor: pointer;
+      }
+      .brand { display: none; }
+      #progress-label { grid-column: 2; grid-row: 1; font-size: 11px; padding-top: 4px; }
+      #scene-title { grid-column: 1; grid-row: 1; margin: 0; font-size: 17px; line-height: 1.2; }
+      #scene-narration, #explore-detail {
+        margin-top: 1px; max-width: none; font-size: 12.5px; line-height: 1.3;
+        display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+      }
+      #scene-question {
+        margin-top: 1px; max-width: none; font-size: 12.5px; line-height: 1.3;
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      }
+      #overlay.is-expanded #scene-narration, #overlay.is-expanded #explore-detail { -webkit-line-clamp: unset; display: block; }
+      #overlay.is-expanded #scene-question { white-space: normal; }
+      #scene-action { margin-top: 2px; padding: 2px 10px; font-size: 12px; }
+      #stage { margin: 0 6px; border-radius: 10px; }
+      #person-rail { display: none; }
+      #year-ruler { height: 22px; }
+      #year-ruler span, #year-ruler span.era { top: 3px; font-size: 10px; }
+      #controls {
+        flex-wrap: nowrap;
+        gap: 6px;
+        padding: 4px 8px 4px;
+      }
+      #controls .ctrl-cluster { flex-wrap: nowrap; gap: 6px; }
+      .btn { min-height: 30px; padding: 0 10px; font-size: 12px; }
+      .btn-primary { min-width: 64px; }
+      #btn-help, #btn-motion, #btn-full { display: none; }
+      #progress-dots { display: none; }
+      .disclaimer { display: none; }
+      .rotate-hint { display: none !important; }
+      #explore-bar { right: 8px; bottom: 8px; padding: 4px 6px 4px 10px; gap: 8px; }
+      #explore-label { font-size: 11px; }
+    }
+    /* Phones in portrait: compact header and one row of controls. */
+    @media (orientation: portrait) and (max-width: 600px) {
+      #overlay { padding: 8px 12px 6px; gap: 2px 10px; cursor: pointer; }
+      .brand { display: none; }
+      #progress-label { grid-column: 2; grid-row: 1; font-size: 12px; padding-top: 4px; }
+      #scene-title { grid-column: 1; grid-row: 1; margin: 0; font-size: 20px; }
+      #scene-narration, #explore-detail {
+        font-size: 14px; line-height: 1.38;
+        display: -webkit-box; -webkit-line-clamp: 6; -webkit-box-orient: vertical; overflow: hidden;
+      }
+      #overlay.is-expanded #scene-narration, #overlay.is-expanded #explore-detail { -webkit-line-clamp: unset; display: block; }
+      #scene-question { font-size: 14.5px; margin-top: 4px; }
+      #scene-action { font-size: 13px; padding: 4px 10px; margin-top: 4px; }
+      #stage { margin: 0 4px; border-radius: 10px; min-height: 200px; }
+      #person-rail { display: none; }
+      #year-ruler span, #year-ruler span.era { font-size: 10px; }
+      #controls { flex-wrap: wrap; gap: 6px; padding: 6px 6px 6px; }
+      #controls .ctrl-cluster { flex-wrap: nowrap; gap: 5px; }
+      .btn { min-height: 34px; padding: 0 9px; font-size: 12.5px; }
+      .btn-primary { min-width: 64px; }
+      #btn-help, #btn-motion, #btn-full { display: none; }
+      #progress-dots { display: none; }
+      .disclaimer { display: none; }
+      .rotate-hint { display: block; flex: 1 1 100%; text-align: center; font-size: 11px; color: var(--muted); }
+    }
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after {
         animation: none !important;
@@ -544,7 +619,7 @@
   <div id="app">
     <header id="overlay">
       <div class="brand"><strong>Lifelines</strong> <span>Lehi’s family · Book of Mormon · schematic timeline</span></div>
-      <div id="progress-label">1 / 18</div>
+      <div id="progress-label">1 / 16</div>
       <h1 id="scene-title">One Life: Lehi</h1>
       <p id="scene-narration"></p>
       <p id="explore-detail" class="is-hidden-vis"></p>
@@ -556,7 +631,7 @@
       <aside id="person-rail" aria-hidden="true"></aside>
       <div id="stage-plot">
         <div id="year-ruler" aria-hidden="true"></div>
-        <svg id="world" viewBox="0 0 6500 2800" preserveAspectRatio="xMidYMid meet" role="group" aria-label="Zoomable lifelines of Lehi’s family and the generations that followed"></svg>
+        <svg id="world" viewBox="0 0 6500 2800" preserveAspectRatio="xMidYMid meet" role="group" aria-label="Zoomable lifelines of Lehi’s family and the generations after them"></svg>
         <div id="explore-bar" class="is-hidden-vis">
           <span id="explore-label" class="ui">Looking closer</span>
           <button type="button" class="btn btn-primary" id="btn-return">Return to presentation</button>
@@ -578,7 +653,8 @@
         <div id="progress-dots" aria-label="Scene progress"></div>
         <button type="button" class="btn btn-primary" id="btn-next">Next</button>
       </div>
-      <div class="disclaimer">Lehi’s family from the Book of Mormon; time is schematic and dates approximate. Branches are possibilities, not predictions. Covenants connect us to Christ; they do not erase hardship. <span id="build-version">v1.8</span></div>
+      <div class="rotate-hint ui">Turn your phone sideways for a larger view · swipe to change scenes</div>
+      <div class="disclaimer">Lehi’s family from the Book of Mormon; time is schematic and dates approximate. Branches are possibilities, not predictions. Covenants connect us to Christ; they do not erase hardship. <span id="build-version">v1.9</span></div>
     </footer>
   </div>
 
@@ -614,7 +690,7 @@
         </li>
         <li>
           <svg viewBox="-12 -12 24 24" aria-hidden="true"><circle r="6" fill="#fbf6ee" stroke="#7a6f62" stroke-width="2"/></svg>
-          <div><strong>Open ring — turning point</strong><span>A step taken in the story: joining the journey, asking a father, finding food, leaving with Nephi.</span></div>
+          <div><strong>Open ring — turning point</strong><span>A step taken in the story: asking a father, finding food, leaving with Nephi.</span></div>
         </li>
         <li>
           <svg viewBox="-12 -12 24 24" aria-hidden="true"><path d="M0 -8 L2.3 -2.6 L8 -2.5 L3.4 1.2 L5.1 6.8 L0 3.6 L-5.1 6.8 L-3.4 1.2 L-8 -2.5 L-2.3 -2.6 Z" fill="#c4962c"/></svg>
@@ -630,7 +706,7 @@
         </li>
         <li>
           <svg viewBox="-14 -14 28 28" aria-hidden="true"><path d="M0 -11 L9 -7.5 V2 C9 8 0 12 0 12 C0 12 -9 8 -9 2 V-7.5 Z" fill="#7a6236"/></svg>
-          <div><strong>Shield — sacred moments</strong><span>An altar and offerings (1 Ne 2:7; 5:9; 7:22), a father’s blessings (2 Ne 1–4), consecration to serve (2 Ne 5:26), and the temple Nephi built (2 Ne 5:16). They connect people to Christ; they do not prevent hardship.</span></div>
+          <div><strong>Shield — sacred moments</strong><span>An altar and offerings (1 Ne 2:7; 5:9), a father’s blessings (2 Ne 1–4), consecration to serve (2 Ne 5:26), and the temple Nephi built (2 Ne 5:16). They connect people to Christ; they do not prevent hardship.</span></div>
         </li>
       </ul>
       <p>Positions are schematic: time runs left to right but is not to scale, and dates are approximate.</p>
@@ -656,7 +732,7 @@
       </header>
       <p>This is one continuous picture, not a stack of separate slides. The camera pans and zooms through a shared world of lifelines. It follows Lehi’s family from the Book of Mormon (1 Nephi 1 – 2 Nephi 5), then pulls back to a field of the generations that followed. Every mark cites its verses; time is schematic and not to scale.</p>
       <ul class="help-list">
-        <li><div><strong>Move through the presentation</strong><span><kbd>→</kbd> <kbd>Space</kbd> <kbd>Page Down</kbd> or Next. <kbd>←</kbd> <kbd>Page Up</kbd> or Back. A clicker should work the same way.</span></div></li>
+        <li><div><strong>Move through the presentation</strong><span><kbd>→</kbd> <kbd>Space</kbd> <kbd>Page Down</kbd> or Next. <kbd>←</kbd> <kbd>Page Up</kbd> or Back. A clicker should work the same way. On a phone or tablet, swipe left or right on the picture.</span></div></li>
         <li><div><strong>Look closer</strong><span>Click a highlighted event to zoom in. Use <em>Return to presentation</em> when you are ready to continue the guided path.</span></div></li>
         <li><div><strong>Other keys</strong><span><kbd>F</kbd> full screen · <kbd>R</kbd> restart · <kbd>L</kbd> legend · <kbd>N</kbd> notes · <kbd>I</kbd> scene list · <kbd>M</kbd> reduced motion · <kbd>?</kbd> help · <kbd>Esc</kbd> close a panel or leave a close-up.</span></div></li>
         <li><div><strong>What this is not</strong><span>It is not a promise that revelation will arrive on cue, or that any choice guarantees an outcome. Possible branches stay unfinished on purpose.</span></div></li>
@@ -695,7 +771,7 @@ const META = {
   title: "Lifelines",
   audience: "PP6 elders quorum",
   disclaimer: "Lehi’s family from the Book of Mormon. Schematic time, not to scale.",
-  build: "v1.8"
+  build: "v1.9"
 };
 
 /* World coordinates: x = schematic time t (0–100) for the family story,
@@ -711,29 +787,9 @@ function xYear(t) {
 }
 const xT = xYear;
 
-/* Generations (scenes 15–17): many lifelines drawn exactly like the family's,
-   one straight horizontal row per person from birth to death, in one
-   continuous stack below the family. Each row starts a little later than the
-   one above. Revealed in three steps, each zoom-out adding new lives.
-   Schematic, not population data or a genealogy. Rows never cross. */
-const GENERATIONS = {
-  seed: 600,                         // deterministic layout (same picture every time)
-  stepRows: [36, 300, 1300],         // rows revealed in scenes 15, 16, 17
-  top: 1300,                         // first row, just below Ishmael's household
-  pitchMax: 12, pitchMin: 2, pitchDecay: 220,   // row spacing tightens smoothly with depth
-  firstBirth: xYear(55),             // grandchildren begin in the wilderness years
-  stepMax: 45, stepMin: 5.5, stepDecay: 120,        // each row is born a little later
-  jitter: 10,
-  lifeMin: 2300,                     // a life is about as long as the family's lines
-  lifeMax: 3000,
-  markRate: [1, 1, 0.5],             // share of the event markers per step
-  strokeWidth: [1.5, 1, 0.8],
-  growMs: 1400,                      // grow-in duration after the camera settles
-  roots: ["laman", "lemuel", "sam", "nephi", "jacob", "joseph", "sisters", "ishmael"]
-};
-
 /* Era labels for the ruler (world x ranges). Dates are approximate. */
 const ERAS = [
+  { x0: xYear(-27), x1: xYear(0),  label: "Before the record · births in order, not dated" },
   { x0: xYear(0),  x1: xYear(10),  label: "Jerusalem · about 600 BC" },
   { x0: xYear(10), x1: xYear(34),  label: "Valley of Lemuel (1 Ne 2–16)" },
   { x0: xYear(34), x1: xYear(62),  label: "Wilderness journey (1 Ne 16–17)" },
@@ -743,24 +799,138 @@ const ERAS = [
 ];
 
 const PEOPLE = {
-  lehi:    { name: "Lehi",    color: "#6b4a2e", y: 240,  start: 0,  end: 90 },
-  sariah:  { name: "Sariah",  color: "#9a4e56", y: 350,  start: 0,  end: 80, fadeTo: 94, endNote: "her death is not recorded" },
-  laman:   { name: "Laman",   color: "#8a6a3a", y: 480,  start: 0,  end: 100 },
-  lemuel:  { name: "Lemuel",  color: "#7a5c6e", y: 580,  start: 0,  end: 100 },
-  sam:     { name: "Sam",     color: "#4f6b3a", y: 680,  start: 0,  end: 100 },
-  nephi:   { name: "Nephi",   color: "#2f6a78", y: 780,  start: 0,  end: 100 },
+  lehi:    { name: "Lehi",    color: "#6b4a2e", y: 240,  start: -26, end: 90 },
+  sariah:  { name: "Sariah",  color: "#9a4e56", y: 350,  start: -26, end: 80, fadeTo: 94, endNote: "her death is not recorded" },
+  // Births before the record opens: birth ORDER only (1 Ne 2:5; Nephi the younger, 3:29). No ages are given.
+  laman:   { name: "Laman",   color: "#8a6a3a", y: 480,  start: -20, end: 100, born: true },
+  lemuel:  { name: "Lemuel",  color: "#7a5c6e", y: 580,  start: -16, end: 100, born: true },
+  sam:     { name: "Sam",     color: "#4f6b3a", y: 680,  start: -12, end: 100, born: true },
+  nephi:   { name: "Nephi",   color: "#2f6a78", y: 780,  start: -7,  end: 100, born: true },
   jacob:   { name: "Jacob",   color: "#4a5f96", y: 900,  start: 50, end: 100, born: true },
   joseph:  { name: "Joseph",  color: "#6f7d3a", y: 990,  start: 56, end: 100, born: true },
-  sisters: { name: "Nephi’s sisters", color: "#a5707f", y: 1080, start: 84, end: 100, faint: true },
-  ishmael: { name: "Ishmael’s household", color: "#8a7358", y: 1190, start: 20, end: 100 }
+  sisters: { name: "Nephi’s sisters", color: "#a5707f", y: 1080, start: 84, end: 100, faint: true }
 };
+/* Lehi's family tree (the grandchildren scene and the three generation steps).
+   Every line is one life drawn on the SAME time axis as the family lines:
+   it starts at that person's birth and runs to the right. Each child's line
+   sits directly under its parent's line (and the parent's earlier children),
+   starting later in time; a faint stem joins it to the parent at the birth.
+   Schematic, not a genealogy: the number of children, birth timing, and
+   lifespans are illustrative — the record does not give them. Deterministic. */
+const TREE = {
+  seed: 615,                                   // same picture every time
+  lineages: ["laman", "lemuel", "sam", "nephi", "jacob", "joseph"],
+  order: ["laman", "lemuel", "sam", "nephi", "jacob", "joseph", "sisters"],
+  firstKids: { laman: 3, lemuel: 3, sam: 3, nephi: 3, jacob: 2, joseph: 2 },
+  kidsChoices: [2, 3, 3, 4, 2],                // later generations (illustrative)
+  maxGen: 6,                                   // 2 = Lehi's grandchildren
+  firstChildAfter: [58, 66],                   // schematic steps after a parent's birth
+  childSpacing: [11, 17],
+  life: [115, 150],
+  kidPitch: 14,                                // grandchildren rows under the family lanes
+  weights: [0, 4, 3, 2, 1.4, 1, 0.7],          // row spacing by generation (scaled per step)
+  sonGap: 3,
+  layoutGens: [0, 2, 3, 5, 6],                 // layout k shows generations up to this
+  aspect: 2.5,
+  markScale: [0, 1, 3.4, 5, 6.5],
+  growMs: 1100,
+  morphMs: 1000,
+  strokeWidth: [3.2, 3.2, 2, 1.6, 1.2, 0.9, 0.8]
+};
+
+function buildTree() {
+  const T = TREE;
+  const rand = mulberry32(T.seed);
+  const between = (r) => r[0] + rand() * (r[1] - r[0]);
+  const nodes = [];
+  ["lehi", "sariah"].forEach((id) => nodes.push({ id: id, gen: 0, lineage: id, parent: -1, birth: PEOPLE[id].start, end: PEOPLE[id].end, founder: true, kids: [], marks: [] }));
+  T.order.forEach((id) => nodes.push({ id: id, gen: 1, lineage: id, parent: -1, birth: PEOPLE[id].start, end: PEOPLE[id].end, founder: true, kids: [], marks: [] }));
+  function addKids(pi, n) {
+    const p = nodes[pi];
+    let b = p.birth + between(T.firstChildAfter);
+    for (let k = 0; k < n; k++) {
+      const life = between(T.life);
+      nodes.push({ id: p.lineage + "-" + nodes.length, gen: p.gen + 1, lineage: p.lineage, parent: pi, birth: Math.round(b * 10) / 10, end: Math.round((b + life) * 10) / 10, kids: [], marks: [] });
+      p.kids.push(nodes.length - 1);
+      b += between(T.childSpacing);
+    }
+  }
+  T.lineages.forEach((id) => addKids(nodes.findIndex((n) => n.id === id), T.firstKids[id]));
+  for (let g = 2; g < T.maxGen; g++) {
+    const len = nodes.length;
+    for (let i = 0; i < len; i++) if (nodes[i].gen === g) addKids(i, T.kidsChoices[Math.floor(rand() * T.kidsChoices.length)]);
+  }
+  // A few legend marks (generations 2–4): a gold star before the first child,
+  // a blue star at each child's birth, an occasional want or heartache.
+  nodes.forEach((n) => {
+    if (n.founder || n.gen > 4) return;
+    if (n.kids.length) {
+      const first = nodes[n.kids[0]].birth;
+      n.marks.push({ type: "spouse", t: Math.round((first - 5) * 10) / 10 });
+      n.kids.forEach((k) => n.marks.push({ type: "child", t: nodes[k].birth }));
+    }
+    const r = rand();
+    if (r < 0.1) n.marks.push({ type: "want", t: Math.round((n.birth + (n.end - n.birth) * (0.55 + rand() * 0.3)) * 10) / 10 });
+    else if (r < 0.18) n.marks.push({ type: "heartache", t: Math.round((n.birth + (n.end - n.birth) * (0.55 + rand() * 0.3)) * 10) / 10 });
+  });
+
+  // Depth-first order: each son, then his descendants, each child directly
+  // under its parent (and the parent's earlier children).
+  const order = [];
+  function visit(i) { order.push(i); nodes[i].kids.forEach(visit); }
+  T.order.forEach((id) => visit(nodes.findIndex((n) => n.id === id)));
+
+  const layouts = [null];
+  const views = [null];
+  // Layout 1 = the family lanes exactly; grandchildren in the gaps beneath.
+  const L1 = nodes.map((n) => (n.founder ? PEOPLE[n.id].y : 0));
+  nodes.forEach((n, i) => {
+    if (n.gen === 2) L1[i] = L1[n.parent] + T.kidPitch * (nodes[n.parent].kids.indexOf(i) + 1);
+  });
+  nodes.forEach((n, i) => { if (n.gen > 2) { let p = n.parent; while (nodes[p].gen > 2) p = nodes[p].parent; L1[i] = L1[p]; } });
+  layouts.push(L1);
+  views.push(null);
+  for (let k = 2; k < T.layoutGens.length; k++) {
+    const G = T.layoutGens[k];
+    const vis = order.filter((i) => nodes[i].gen <= G);
+    const maxBirth = Math.max(...vis.map((i) => xYear(nodes[i].birth)));
+    const maxEnd = Math.max(...vis.map((i) => xYear(nodes[i].end)));
+    const camX = xYear(-30) - 60;
+    const right = Math.min(maxEnd + 80, maxBirth + 1800);
+    const w = right - camX;
+    const h = w / T.aspect;
+    // names stay readable: the top rows open up as the camera pulls back
+    const D = Math.max(120, w / 1240 * 30);
+    const view = { x: Math.round(camX), y: Math.round(PEOPLE.lehi.y - 1.25 * D), w: Math.round(w), h: Math.round(h) };
+    const bottom = view.y + view.h - 0.9 * D;
+    const firstSon = PEOPLE.lehi.y + 2.1 * D;
+    const sons = vis.filter((i) => nodes[i].gen === 1).length;
+    const W = vis.reduce((a, i) => a + T.weights[nodes[i].gen], 0) + T.sonGap * (sons - 1);
+    const s = (bottom - firstSon) / W;
+    const Y = new Array(nodes.length).fill(0);
+    Y[0] = PEOPLE.lehi.y; Y[1] = Math.round(PEOPLE.lehi.y + D);
+    let cursor = firstSon, first = true;
+    vis.forEach((i) => {
+      const n = nodes[i];
+      if (n.gen === 1) { if (!first) cursor += T.sonGap * s; first = false; }
+      Y[i] = Math.round(cursor * 10) / 10;
+      cursor += T.weights[n.gen] * s;
+    });
+    order.forEach((i) => { if (nodes[i].gen > G) Y[i] = Y[nodes[i].parent]; });
+    layouts.push(Y);
+    views.push(view);
+  }
+  return { nodes: nodes, order: order, layouts: layouts, views: views };
+}
+const TREE_DATA = buildTree();
+
 
 /* type: death · want (hunger/illness) · heartache · harm · spouse · child ·
          grandchild · altar · blessing · consecration · temple (shields) ·
          revelation · moment.  `year` holds schematic time t. */
 const EVENTS = [
   // --- Lehi ---
-  { id: "l-wife", person: "lehi", year: 0.6, type: "spouse", label: "Sariah, his wife (1 Ne 2:5)", labelDy: 34, detail: "Lehi and Sariah are already married when the record opens; Nephi names his mother Sariah (1 Nephi 2:5). No wedding date is given." },
+  { id: "l-wife", person: "lehi", year: -24, type: "spouse", label: "Sariah, his wife (1 Ne 2:5)", labelDy: 34, detail: "Lehi and Sariah are already married when the record opens; Nephi names his mother Sariah (1 Nephi 2:5). No wedding date is given — the star is placed schematically before their children’s births." },
   { id: "l-vision", person: "lehi", year: 3, type: "revelation", label: "Vision and call (1 Ne 1)", detail: "Lehi prays for his people, sees a pillar of fire and a vision of God, and is called to prophesy in Jerusalem; the people mock him and seek his life (1 Nephi 1:5–20)." },
   { id: "l-leave", person: "lehi", year: 9, type: "revelation", label: "Told in a dream to leave (1 Ne 2:2)", labelDy: 34, detail: "The Lord commands Lehi in a dream to take his family into the wilderness. He leaves his house, his land, his gold and silver and precious things (1 Nephi 2:1–4)." },
   { id: "l-altar", person: "lehi", year: 12, type: "altar", label: "An altar of thanks (1 Ne 2:7)", detail: "After three days’ journey, Lehi builds an altar of stones, makes an offering, and gives thanks to the Lord (1 Nephi 2:6–7). Sacred moments did not stop the hardship that followed." },
@@ -779,7 +949,7 @@ const EVENTS = [
   { id: "l-death", person: "lehi", year: 90, type: "death", label: "Lehi dies (2 Ne 4:12)", labelDy: 34, detail: "After he has spoken to all his household, Lehi grows old, dies, and is buried (2 Nephi 4:12)." },
 
   // --- Sariah ---
-  { id: "s-wife", person: "sariah", year: 0.6, type: "spouse", label: "Lehi’s wife (1 Ne 2:5)", labelDy: 34, detail: "Sariah walks her own line beside Lehi’s. Two lines travel together; neither is absorbed (1 Nephi 2:5)." },
+  { id: "s-wife", person: "sariah", year: -24, type: "spouse", label: "Lehi’s wife (1 Ne 2:5)", labelDy: 34, detail: "Sariah walks her own line beside Lehi’s. Two lines travel together; neither is absorbed (1 Nephi 2:5)." },
   { id: "s-fear", person: "sariah", year: 18, type: "heartache", label: "Fears for her sons (1 Ne 5:1–3)", detail: "While her sons are away getting the plates, Sariah supposes they have perished in the wilderness, mourns, and complains against Lehi (1 Nephi 5:1–3)." },
   { id: "s-witness", person: "sariah", year: 21, type: "revelation", label: "Her own witness (1 Ne 5:8)", labelDy: 34, detail: "When her sons return, Sariah says she now knows of a surety that the Lord commanded her husband and protected her sons (1 Nephi 5:7–8). Mothers receive revelation too." },
   { id: "s-offering", person: "sariah", year: 23.5, type: "altar", label: "Offerings and thanks (1 Ne 5:9)", detail: "The family offers sacrifice and burnt offerings and gives thanks together (1 Nephi 5:9)." },
@@ -792,7 +962,7 @@ const EVENTS = [
   { id: "la-murmur", person: "laman", year: 14, type: "heartache", label: "Murmurs against his father (1 Ne 2:11–12)", labelDy: 34, detail: "Laman and Lemuel murmur because they do not know the dealings of the God who created them (1 Nephi 2:11–12). A pattern, not a destiny." },
   { id: "la-wife", person: "laman", year: 31, type: "spouse", label: "Marries a daughter of Ishmael (1 Ne 16:7)", detail: "Lehi’s sons and Zoram marry daughters of Ishmael (1 Nephi 16:7)." },
   { id: "la-hunger", person: "laman", year: 40, type: "want", label: "Hungry, he murmurs exceedingly (16:20)", detail: "In the hunger after the bow breaks, Laman and Lemuel and the sons of Ishmael murmur exceedingly because of their sufferings and afflictions (1 Nephi 16:18–20). One moment, seen alone, is easy to judge." },
-  { id: "la-children", person: "laman", year: 84, type: "grandchild", label: "Lehi blesses Laman’s children (2 Ne 4:3–7)", detail: "Lehi blesses the children of Laman: if they are cursed, the cursing may be on their parents’ heads; the Lord will not suffer them to perish and will be merciful to their seed (2 Nephi 4:3–7)." },
+  { id: "la-children", person: "laman", year: 84, type: "grandchild", label: "Lehi blesses Laman’s children (2 Ne 4:3–7)", labelAnchor: "end", detail: "Lehi blesses the children of Laman: if they are cursed, the cursing may be on their parents’ heads; the Lord will not suffer them to perish and will be merciful to their seed (2 Nephi 4:3–7)." },
   { id: "la-offered", person: "laman", year: 87, type: "blessing", label: "Blessing offered, not forced (2 Ne 1:28–29)", labelDy: 34, detail: "Lehi offers his sons his first blessing if they will hearken; if not, he takes it away and it rests on Nephi (2 Nephi 1:28–29). They keep their agency." },
   { id: "la-father", person: "laman", year: 90, type: "death", label: "Father dies (2 Ne 4:12)", detail: "Lehi dies (2 Nephi 4:12). Not many days after, Laman and Lemuel are angry with Nephi again (2 Nephi 4:13)." },
 
@@ -800,7 +970,7 @@ const EVENTS = [
   { id: "le-murmur", person: "lemuel", year: 14, type: "heartache", label: "Murmurs too (1 Ne 2:12)", labelDy: 34, detail: "Lemuel joins Laman in murmuring against their father (1 Nephi 2:11–12). Lehi also speaks to Lemuel alone about steadfastness (2:10)." },
   { id: "le-wife", person: "lemuel", year: 31, type: "spouse", label: "Marries a daughter of Ishmael (1 Ne 16:7)", detail: "Lemuel marries a daughter of Ishmael (1 Nephi 16:7)." },
   { id: "le-hunger", person: "lemuel", year: 40, type: "want", label: "Murmurs exceedingly (16:20)", detail: "Lemuel murmurs exceedingly with Laman and the sons of Ishmael (1 Nephi 16:20)." },
-  { id: "le-children", person: "lemuel", year: 84, type: "grandchild", label: "Lehi blesses Lemuel’s children (2 Ne 4:8–9)", detail: "Lehi gives the children of Lemuel the same blessing he gave Laman’s children (2 Nephi 4:8–9)." },
+  { id: "le-children", person: "lemuel", year: 84, type: "grandchild", label: "Lehi blesses Lemuel’s children (2 Ne 4:8–9)", labelAnchor: "end", detail: "Lehi gives the children of Lemuel the same blessing he gave Laman’s children (2 Nephi 4:8–9)." },
   { id: "le-offered", person: "lemuel", year: 87, type: "blessing", label: "Pleaded with, not forced (2 Ne 1:13–23)", labelDy: 34, detail: "Lehi pleads with his sons to awake and arise from the dust (2 Nephi 1:13–23). Lemuel keeps his agency." },
   { id: "le-father", person: "lemuel", year: 90, type: "death", label: "Father dies (2 Ne 4:12)", detail: "Lehi dies (2 Nephi 4:12)." },
 
@@ -809,7 +979,7 @@ const EVENTS = [
   { id: "sa-rod", person: "sam", year: 17.5, type: "harm", label: "Struck with a rod (1 Ne 3:28–29)", detail: "Laman and Lemuel beat Sam and Nephi with a rod until an angel stops them (1 Nephi 3:28–29). The ones harmed were not at fault." },
   { id: "sa-wife", person: "sam", year: 31, type: "spouse", label: "Marries a daughter of Ishmael (1 Ne 16:7)", detail: "Sam marries a daughter of Ishmael (1 Nephi 16:7)." },
   { id: "sa-hunger", person: "sam", year: 40, type: "want", label: "Hungry too (16:19)", detail: "Sam shares the family’s want of food (1 Nephi 16:19). His own reaction is not described separately — don’t fill in what the record does not say." },
-  { id: "sa-blessed", person: "sam", year: 86, type: "blessing", label: "Blessed with his seed (2 Ne 4:11)", detail: "Lehi blesses Sam: his seed will be numbered with Nephi’s, and he will be blessed in all his days (2 Nephi 4:11)." },
+  { id: "sa-blessed", person: "sam", year: 86, type: "blessing", label: "Blessed with his seed (2 Ne 4:11)", labelAnchor: "end", detail: "Lehi blesses Sam: his seed will be numbered with Nephi’s, and he will be blessed in all his days (2 Nephi 4:11)." },
   { id: "sa-father", person: "sam", year: 90, type: "death", label: "Father dies (2 Ne 4:12)", detail: "Lehi dies (2 Nephi 4:12)." },
 
   // --- Nephi ---
@@ -837,15 +1007,6 @@ const EVENTS = [
   // --- Nephi's sisters (named only as a group, 2 Ne 5:6) ---
   { id: "si-go", person: "sisters", year: 94, type: "moment", label: "Go with Nephi (2 Ne 5:6)", labelAnchor: "end", labelDy: 46, detail: "Nephi’s sisters are named among those who go with him (2 Nephi 5:6). Their births are not recorded, so the line begins where the record mentions them." },
 
-  // --- Ishmael's household ---
-  { id: "i-join", person: "ishmael", year: 20, type: "moment", label: "Joins the journey (1 Ne 7:2–5)", labelDy: 46, detail: "Lehi’s sons return to Jerusalem; Ishmael and his household come into the wilderness with them (1 Nephi 7:2–5). A daughter, her mother, and a son plead for Nephi when he is bound (7:19)." },
-  { id: "i-offering", person: "ishmael", year: 22.5, type: "altar", label: "Offerings (1 Ne 7:22)", detail: "Arriving at Lehi’s tent, they give thanks and offer sacrifice and burnt offerings (1 Nephi 7:22)." },
-  { id: "i-wives", person: "ishmael", year: 31, type: "spouse", label: "Daughters marry (1 Ne 16:7)", detail: "Ishmael’s daughters marry Lehi’s sons and Zoram (1 Nephi 16:7)." },
-  { id: "i-hunger", person: "ishmael", year: 40, type: "want", label: "Sons of Ishmael murmur (16:20)", labelDy: 34, detail: "The sons of Ishmael murmur exceedingly in the hunger (1 Nephi 16:20)." },
-  { id: "i-death", person: "ishmael", year: 47, type: "death", label: "Ishmael dies at Nahom (16:34)", detail: "Ishmael dies and is buried at Nahom (1 Nephi 16:34)." },
-  { id: "i-mourn", person: "ishmael", year: 49, type: "heartache", label: "His daughters mourn (16:35)", labelDy: 34, detail: "Ishmael’s daughters mourn exceedingly for their father and because of their afflictions in the wilderness (1 Nephi 16:35)." },
-  { id: "i-blessed", person: "ishmael", year: 86, type: "blessing", label: "Lehi speaks to them (2 Ne 4:10)", detail: "Lehi speaks to the sons of Ishmael and all his household (2 Nephi 4:10)." },
-
   // --- Lehi's dream (scriptural pattern; layer "lehi") ---
   { id: "lehi-partakes", person: null, year: 0, x: 2050, y: 2040, type: "vision", layer: "lehi", label: "Lehi partakes, then wants his family to come (8:10–13)", labelDx: 30, labelDy: -30, explorePad: [620, 260], detail: "In the dream Lehi tastes the fruit of the tree, finds it filled his soul with joy, and at once desires that his family partake too (1 Nephi 8:10–13)." },
   { id: "lehi-family-come", person: null, year: 0, x: 2560, y: 2300, type: "vision", layer: "lehi", label: "Sariah, Sam, and Nephi come and partake (8:14–16)", labelDx: 30, labelDy: -40, explorePad: [620, 260], detail: "Sariah, Sam, and Nephi come and partake of the fruit (1 Nephi 8:14–16). Continuing still matters: some who tasted the fruit later turned away (8:28)." },
@@ -853,7 +1014,7 @@ const EVENTS = [
   { id: "lehi-pleads", person: null, year: 0, x: 2285, y: 2377, type: "vision", layer: "lehi", label: "Lehi keeps pleading (8:36–37)", labelDx: -640, labelDy: 12, explorePad: [620, 260], detail: "Lehi fears for them and exhorts them with all the feeling of a tender parent (1 Nephi 8:36–37). His love keeps reaching toward sons who said no." }
 ];
 
-/* Kept for compatibility; v1.8 draws no invented "ordinary life" marks. */
+/* Kept for compatibility; v1.9 draws no invented "ordinary life" marks. */
 const ORDINARY = [];
 
 /* Possible branches from the hunger moment on Lehi's line (teaching device). */
@@ -869,12 +1030,12 @@ const LEHI = {
   dreamX: 2050,                                  // the dream moment (1 Ne 8)
   endOpenX: 2330,                                // Laman/Lemuel lanes pause here
   people: [
-    { id: "lehi",   name: "Lehi",   color: PEOPLE.lehi.color,   y: 2040, toward: "tree" },
-    { id: "sariah", name: "Sariah", color: PEOPLE.sariah.color, y: 2130, toward: "tree" },
-    { id: "nephi",  name: "Nephi",  color: PEOPLE.nephi.color,  y: 2220, toward: "tree" },
-    { id: "sam",    name: "Sam",    color: PEOPLE.sam.color,    y: 2310, toward: "tree" },
-    { id: "laman",  name: "Laman",  color: PEOPLE.laman.color,  y: 2500, toward: "open" },
-    { id: "lemuel", name: "Lemuel", color: PEOPLE.lemuel.color, y: 2590, toward: "open" }
+    { id: "lehi",   name: "Lehi",   color: PEOPLE.lehi.color,   y: 2040, toward: "tree", born: 0 },
+    { id: "sariah", name: "Sariah", color: PEOPLE.sariah.color, y: 2130, toward: "tree", born: 0 },
+    { id: "nephi",  name: "Nephi",  color: PEOPLE.nephi.color,  y: 2220, toward: "tree", born: 330 },
+    { id: "sam",    name: "Sam",    color: PEOPLE.sam.color,    y: 2310, toward: "tree", born: 240 },
+    { id: "laman",  name: "Laman",  color: PEOPLE.laman.color,  y: 2500, toward: "open", born: 90 },
+    { id: "lemuel", name: "Lemuel", color: PEOPLE.lemuel.color, y: 2590, toward: "open", born: 160 }
   ],
   rod: { x0: 2440, x1: 3420, y: 2322 },          // iron rod along the river bank
   river: { x0: 2720, x1: 3975, y: 2412 },        // river of water (8:13)
@@ -892,31 +1053,29 @@ const ANNOTATIONS = [
   { id: "next-step", layer: "next-step", x: xYear(43.6), y: 470, text: "Look to the Lord; take the next step shown.", kind: "action" },
   { id: "liahona-note", layer: "next-step", x: xYear(43.6), y: 510, text: "It worked by faith and diligence and changed from time to time (16:28–29)." },
   { id: "plead-note", layer: "agency", x: xYear(84.6), y: 165, text: "“Awake, my sons” (2 Ne 1:23)" },
-  { id: "agency-note", layer: "agency", x: xYear(80.6), y: 760, lines: ["They keep their agency. Love does not force;", "it keeps reaching (2 Ne 1:28–29)."] },
-  { id: "anger-note", layer: "agency", x: xYear(80.6), y: 830, text: "Hardship continues: anger rises again after Lehi dies (2 Ne 4:13)." },
-  { id: "harm-note", layer: "harm-notes", x: xYear(26), y: 880, text: "Sam and Nephi were not at fault." },
-  { id: "harm-help", layer: "harm-notes", x: xYear(26), y: 920, text: "Today: safety first, protection, reporting where required, and professional help." },
-  { id: "marriage-caption", layer: "marriage", x: xYear(4), y: 305, anchor: "start", text: "Two lives side by side" },
+  { id: "agency-note", layer: "agency", x: xYear(58), y: 776, lines: ["They keep their agency. Love does not force;", "it keeps reaching (2 Ne 1:28–29)."] },
+  { id: "anger-note", layer: "agency", x: xYear(58), y: 874, text: "Hardship continues: anger rises again after Lehi dies (2 Ne 4:13)." },
+  { id: "marriage-caption", layer: "marriage", x: xYear(-21), y: 305, anchor: "start", text: "Two lives side by side" },
   { id: "sariah-end", layer: "person-sariah", x: xYear(80.5), y: 388, anchor: "start", text: "her death is not recorded" }
 ];
 
 /* Shared camera for the whole-family stops so they stay aligned. */
 const FAMILY_OVERVIEW_VIEW = {
-  years: [0, 100],
-  people: ["lehi", "ishmael"],
+  years: [-27, 100],
+  people: ["lehi", "sisters"],
   padLeft: 120,
   padRight: 140,
   padY: 120
 };
 
-/* Scene 4 only: extra room below Ishmael’s lane (captions + control bar) and on the right (era label). */
+/* Scene 4 only: extra room below the last lane (captions + control bar) and on the right (era label). */
 const FAMILY_INTRO_VIEW = {
-  years: [0, 100],
-  people: ["lehi", "ishmael"],
+  years: [-27, 100],
+  people: ["lehi", "sisters"],
   padLeft: 140,
   padRight: 300,
   padY: 120,
-  points: [[xYear(0), PEOPLE.ishmael.y + 250]]
+  points: [[xYear(-27), PEOPLE.sisters.y + 250]]
 };
 
 const ALL_PEOPLE = Object.keys(PEOPLE);
@@ -946,7 +1105,7 @@ const SCENES = [
     title: "How to Read a Life",
     narration: "Some marks are death, want or hunger, heartache, or harm by another. Shields mark sacred moments — an altar and offerings, a father’s blessings, the temple Nephi built. Sacred moments connect people to Christ. They do not make anyone immune to hardship.",
     question: "",
-    notes: "Lehi built an altar and gave thanks right after leaving everything behind (1 Ne 2:7) — and the hardship kept coming. The key under Lehi’s line shows every mark; open Legend (L) only if you want the longer descriptions. Optional: Mosiah 18:8–10; Alma 7:11–12.",
+    notes: "Lehi built an altar and gave thanks right after leaving everything behind (1 Ne 2:7) — and the hardship kept coming. The key under Lehi’s line shows every mark; open Legend (L) only if you want the longer descriptions. If harm comes up: the person harmed is not at fault; safety first, and point privately to the bishop. Optional: Mosiah 18:8–10; Alma 7:11–12.",
     view: { years: [0, 36], people: ["lehi"], points: [[xYear(0), 110], [xYear(36), 450]], padX: 150, padY: 40 },
     show: ["axis", "inline-legend", "christ-note"].concat(lanes(["lehi"])),
     highlight: ["l-altar"],
@@ -956,9 +1115,9 @@ const SCENES = [
     id: "sariahs-path",
     title: "Sariah’s Own Path",
     narration: "Sariah’s life is her own. While her sons were gone she feared they had perished and complained against Lehi (1 Ne 5:1–3). Lehi comforted her (5:4–6). When they returned she received her own witness that the Lord had commanded her husband (5:8). Mothers receive revelation too.",
-    question: "What changes when we treat a wife as a full partner?",
+    question: "",
     notes: "Gold stars mark marriage: two lines side by side, neither absorbed. Lehi did not dismiss Sariah’s fear; he answered it with his own witness. Her certainty came through her own experience.",
-    view: { years: [0, 30], people: ["lehi", "sariah"], padX: 150, padY: 150 },
+    view: { years: [-27, 30], people: ["lehi", "sariah"], padX: 150, padY: 150 },
     show: ["axis", "marriage"].concat(lanes(["lehi", "sariah"])),
     highlight: ["s-wife", "l-comfort", "s-fear", "s-witness"],
     people: ["lehi", "sariah"]
@@ -966,12 +1125,12 @@ const SCENES = [
   {
     id: "family-of-lines",
     title: "A Family of Lines",
-    narration: "Laman, Lemuel, Sam, and Nephi each walk their own line. Jacob and Joseph are born in the wilderness (1 Ne 18:7). Ishmael’s household joins the journey (1 Ne 7), and Nephi’s sisters are named later (2 Ne 5:6). Parents keep walking their own lines too.",
+    narration: "Laman, Lemuel, Sam, and Nephi each begin their own line at birth, in order (1 Ne 2:5; 3:29). Jacob and Joseph are born in the wilderness (1 Ne 18:7), and Nephi’s sisters are named later (2 Ne 5:6). Parents keep walking their own lines too.",
     question: "",
-    notes: "Each person owns a line. Stewardship is not ownership of anyone’s agency. The eras along the top are approximate: about eight years in the wilderness in all (1 Ne 17:4), and about thirty years from leaving Jerusalem to the separation (2 Ne 5:28). Sariah’s line fades because her death is not recorded. Zoram is part of the story but is not drawn as a separate line.",
+    notes: "Each person owns a line. Stewardship is not ownership of anyone’s agency. The eras along the top are approximate: about eight years in the wilderness in all (1 Ne 17:4), and about thirty years from leaving Jerusalem to the separation (2 Ne 5:28). Sariah’s line fades because her death is not recorded. The left edge, before the record opens, is schematic: it shows birth order only — no ages are given. Ishmael’s household and Zoram are part of the story but are not drawn as separate lines.",
     view: FAMILY_INTRO_VIEW,
     show: FAMILY_LAYERS,
-    highlight: ["s-jacob", "s-joseph", "i-join", "si-go"],
+    highlight: ["s-jacob", "s-joseph", "si-go"],
     people: ALL_PEOPLE
   },
   {
@@ -1054,47 +1213,28 @@ const SCENES = [
     people: ["lehi", "sariah", "nephi"]
   },
   {
-    id: "love-without-control",
-    title: "Love Without Control",
-    narration: "In the promised land Lehi pleads with his sons and offers them his blessing (2 Ne 1:13–29). He blesses Laman’s and Lemuel’s children (2 Ne 4:3–9), and Sam with his seed (4:11). Laman and Lemuel keep their agency. Love does not force; it keeps reaching.",
-    question: "What does love look like when someone says not yet?",
-    notes: "Blessings are offered, not forced (2 Ne 1:28–29). Lehi’s love outlasts their refusals — and hardship does not end when he dies (2 Ne 4:13).",
-    view: { years: [80, 92], people: ["lehi", "sam"], points: [[xYear(80), 120], [xYear(92), 860]], padLeft: 130, padRight: 520, padY: 20 },
-    show: ["axis", "agency"].concat(lanes(["lehi", "laman", "lemuel", "sam"])),
-    highlight: ["l-blesses", "la-children", "le-children", "sa-blessed", "l-death"],
+    id: "grandchildren",
+    title: "Lehi Blesses His Grandchildren",
+    narration: "Lehi’s sons now have children of their own (1 Ne 17:1; 18:19) — new lines that begin under their parents’ lines. Near the end of his life Lehi blesses Laman’s and Lemuel’s children (2 Ne 4:3–9) and Sam and his seed (4:11). He pleads with his sons but does not force them (2 Ne 1:13–29).",
+    question: "How can we keep loving and blessing family members who choose differently than we hoped?",
+    notes: "Blessings are offered, not forced (2 Ne 1:28–29). Lehi’s love outlasts their refusals — and hardship does not end when he dies (2 Ne 4:13). The number of grandchildren and their birth timing are schematic; the record does not give them.",
+    view: { years: [33, 93], people: ["lehi", "sam"], points: [[xYear(33), 120], [xYear(93), 892]], padLeft: 120, padRight: 260, padY: 20 },
+    show: ["axis", "agency", "kids-laman", "kids-lemuel", "kids-sam"].concat(lanes(["lehi", "laman", "lemuel", "sam"])),
+    treeLayout: 1,
+    reveal: [2],
+    highlight: ["l-blesses", "la-children", "le-children", "sa-blessed"],
     people: ["lehi", "laman", "lemuel", "sam"]
   },
   {
-    id: "when-harm",
-    title: "When Harm Is Present",
-    narration: "Some marks are harm inflicted by another. Laman and Lemuel struck Sam and Nephi with a rod (1 Ne 3:28–29), bound Nephi in the wilderness (7:16), and bound him on the ship (18:11–15). The person harmed is not at fault.",
-    question: "",
-    notes: "Be brief and steady. Do not invite disclosure in the room or dramatize. In families today: safety first, protection, reporting where required, and professional help; point privately to the bishop afterward. When Nephi was bound in the wilderness, one of Ishmael’s daughters, her mother, and a son pleaded for him and softened his brothers’ hearts (1 Ne 7:19) — standing up for someone matters. On the ship, his wife’s and children’s tears and prayers did not soften his brothers; only the power of God freed him (1 Ne 18:19–20).",
-    view: { years: [14, 76], people: ["sam", "nephi"], padX: 150, padY: 180 },
-    show: ["axis", "harm-notes"].concat(lanes(["sam", "nephi"])),
-    highlight: ["sa-rod", "n-rod", "n-bound", "n-ship"],
-    people: ["sam", "nephi"]
-  },
-  {
-    id: "fathers-trust",
-    title: "A Father’s Trust",
-    narration: "The whole family again: opportunity, blessing, and responsibility. Lehi led by serving, pleading, and blessing — not by control. A father presiding in his home is not the ordained office of a stake patriarch, and not above his wife; Sariah was a full partner with her own witness. The same truths apply to our families today, whatever they look like.",
-    question: "",
-    notes: "Respect different family situations — single parents, blended families, empty chairs, children not in the home. Opportunity, blessing, and responsibility, without comparison or ranking. Covenants and blessings connect people to Christ; they did not spare this family hardship.",
-    view: FAMILY_OVERVIEW_VIEW,
-    show: FAMILY_LAYERS,
-    highlight: [],
-    people: ALL_PEOPLE
-  },
-  {
     id: "gen-family",
-    title: "Lehi’s family",
-    narration: "Their lines go on: children and grandchildren fill in beneath them.",
+    title: "The Family Grows",
+    narration: "Lehi’s grandchildren begin under their parents’ lines. Then their own children’s lines fill in beneath them.",
     question: "",
-    notes: "Let the new rows draw in before speaking. Each row is one life, drawn the same way as the family’s lines. The picture is schematic, not a genealogy or population data.",
-    view: { box: { x: 100, y: 100, w: 6300, h: 1720 } },
-    show: FAMILY_LAYERS.concat(["gen-0"]),
-    grow: [0],
+    notes: "Let the lines draw in before speaking. Each line is one life on the same timeline: it starts at that person’s birth, directly under the parent. Schematic, not a genealogy — the counts and timing are illustrative.",
+    view: { box: TREE_DATA.views[2] },
+    show: ["tree-founders", "tree-names", "tree-g2", "tree-g3"],
+    treeLayout: 2,
+    reveal: [2, 3],
     highlight: [],
     people: [],
     noYears: true
@@ -1102,12 +1242,13 @@ const SCENES = [
   {
     id: "gen-children",
     title: "Their children’s children",
-    narration: "Lehi blessed his children’s children (2 Ne 4:3–9). Hundreds more lives appear.",
+    narration: "Lehi blessed his children’s children (2 Ne 4:3–9). The lines keep filling in, each starting at its own birth.",
     question: "",
     notes: "Lehi blessed Laman’s and Lemuel’s children that the Lord would be merciful to them and their seed (2 Ne 4:7, 9). Each generation still chooses for itself.",
-    view: { box: { x: 100, y: 100, w: 11100, h: 3720 } },
-    show: FAMILY_LAYERS.concat(["gen-0", "gen-1"]),
-    grow: [1],
+    view: { box: TREE_DATA.views[3] },
+    show: ["tree-founders", "tree-names", "tree-g2", "tree-g3", "tree-g4", "tree-g5"],
+    treeLayout: 3,
+    reveal: [4, 5],
     highlight: [],
     people: [],
     noYears: true
@@ -1117,10 +1258,11 @@ const SCENES = [
     title: "Many generations",
     narration: "Each line is a life. Look how many.",
     question: "",
-    notes: "Pause here. Optional question: What will my blessings and choices carry forward — and what will my children still choose? The field is schematic; line counts are illustrative.",
-    view: { box: { x: 100, y: 100, w: 18500, h: 6800 } },
-    show: FAMILY_LAYERS.concat(["gen-0", "gen-1", "gen-2"]),
-    grow: [2],
+    notes: "Pause here. Optional question: What will my blessings and choices carry forward — and what will my children still choose? The tree is schematic; line counts are illustrative.",
+    view: { box: TREE_DATA.views[4] },
+    show: ["tree-founders", "tree-names", "tree-g2", "tree-g3", "tree-g4", "tree-g5", "tree-g6"],
+    treeLayout: 4,
+    reveal: [6],
     highlight: [],
     people: [],
     noYears: true
@@ -1130,7 +1272,7 @@ const SCENES = [
     title: "Who Needs Your Attention?",
     narration: "Somewhere on a real line in your family, someone may need you.",
     question: "Who needs your attention? Ask the Lord. Counsel together. Act in love.",
-    notes: "Close with quiet. Leave time. Thank them. The illustration is not a promise that every prayer yields a clear plan or a changed outcome.",
+    notes: "Close with quiet. Leave time. Thank them. Respect different family situations — single parents, blended families, empty chairs, children not in the home. The illustration is not a promise that every prayer yields a clear plan or a changed outcome.",
     view: FAMILY_OVERVIEW_VIEW,
     show: FAMILY_LAYERS,
     highlight: [],
@@ -1354,7 +1496,7 @@ function renderWorld() {
   // Era boundaries (schematic time; the ruler names each era)
   const axis = svgEl("g", { "data-layer": "axis", class: "layer" }, svg);
   const famTop = PEOPLE.lehi.y - 150;
-  const famBottom = PEOPLE.ishmael.y + 70;
+  const famBottom = PEOPLE.sisters.y + 70;
   ERAS.forEach((era, i) => {
     if (i > 0 && era.x0 <= xYear(100) + 1) {
       svgEl("line", {
@@ -1367,7 +1509,7 @@ function renderWorld() {
 
   // Marriage: Lehi and Sariah travel side by side; neither line is absorbed
   const marriage = svgEl("g", { "data-layer": "marriage", class: "layer" }, svg);
-  const mx = xYear(0.6);
+  const mx = xYear(-24);
   svgEl("rect", {
     x: mx, y: PEOPLE.lehi.y, width: xYear(PEOPLE.lehi.end) - mx,
     height: PEOPLE.sariah.y - PEOPLE.lehi.y,
@@ -1378,10 +1520,11 @@ function renderWorld() {
     stroke: "#c4962c", "stroke-width": 2.4, "vector-effect": "non-scaling-stroke"
   }, marriage);
 
-  // Births in the wilderness (1 Ne 18:7): stems from the parents' band
+  // Each child's line begins at birth: stems from the parents' band
+  // (older sons in birth order before the record; Jacob and Joseph, 1 Ne 18:7)
   const births = svgEl("g", { "data-layer": "births", class: "layer" }, svg);
   const familyJoinY = (PEOPLE.lehi.y + PEOPLE.sariah.y) / 2;
-  ["jacob", "joseph"].forEach((id) => {
+  ["laman", "lemuel", "sam", "nephi", "jacob", "joseph"].forEach((id) => {
     const child = PEOPLE[id];
     const x = xYear(child.start);
     svgEl("path", {
@@ -1518,7 +1661,7 @@ function renderWorld() {
   });
 
   renderLehi();
-  renderGenerations();
+  renderTree();
 
   EVENTS.forEach((ev) => {
     const pt = eventPoint(ev);
@@ -1557,124 +1700,175 @@ function mulberry32(seed) {
   };
 }
 
-/* Build the generation rows (pure data; also used by the tests).
-   One continuous stack: each row is one person, a straight horizontal line
-   from birth (x0) to death (x1). Every row starts a little later than the
-   row above and sits just below it. Spacing tightens smoothly with depth, so
-   there are no gaps or bands. Rows are split into reveal steps (0, 1, 2)
-   for scenes 15–17. */
-function buildGenerationRows() {
-  const G = GENERATIONS;
-  const rand = mulberry32(G.seed);
-  const total = G.stepRows.reduce((a, b) => a + b, 0);
-  const rows = [];
-  let y = G.top;
-  let birth = G.firstBirth;
-  let step = 0, stepLeft = G.stepRows[0];
-  for (let i = 0; i < total; i++) {
-    while (stepLeft === 0) { step += 1; stepLeft = G.stepRows[step]; }
-    stepLeft -= 1;
-    const x0 = Math.round(birth + (rand() - 0.5) * G.jitter);
-    const life = G.lifeMin + rand() * (G.lifeMax - G.lifeMin);
-    // lineage color: Lehi's children's lanes first, then an earlier row
-    let family;
-    if (i < G.roots.length * 3) family = G.roots[i % G.roots.length];
-    else {
-      const pool = rows.filter((r) => r.x0 < x0 - 700);
-      family = (pool.length ? pool[Math.floor(rand() * pool.length)] : rows[Math.floor(rand() * rows.length)]).family;
-    }
-    const r = { step: step, family: family, y: Math.round(y * 10) / 10, x0: x0, x1: Math.round(x0 + life), marks: [] };
-    const m = [];
-    const rate = G.markRate[step];
-    if (rand() < 0.42 * rate) m.push({ type: "spouse", x: x0 + life * (0.2 + rand() * 0.1) });
-    if (m.length && rand() < 0.5) m.push({ type: "child", x: x0 + life * (0.34 + rand() * 0.14) });
-    if (rand() < 0.12 * rate) m.push({ type: "death", x: x0 + life * (0.55 + rand() * 0.3) });
-    else if (rand() < 0.1 * rate) m.push({ type: "want", x: x0 + life * (0.5 + rand() * 0.35) });
-    else if (rand() < 0.08 * rate) m.push({ type: "heartache", x: x0 + life * (0.5 + rand() * 0.35) });
-    r.marks = m.map((k) => ({ type: k.type, x: Math.round(k.x) }));
-    rows.push(r);
-    y += G.pitchMin + (G.pitchMax - G.pitchMin) * Math.exp(-i / G.pitchDecay);
-    birth += G.stepMin + (G.stepMax - G.stepMin) * Math.exp(-i / G.stepDecay);
-  }
-  return rows;
-}
-
 function shiftPath(d, dx, dy) {
   return d.replace(/(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)/g, (all, a, b) => (parseFloat(a) + dx).toFixed(1) + "," + (parseFloat(b) + dy).toFixed(1));
 }
 
-/* Each reveal step is its own layer (gen-0, gen-1, gen-2) with a clip
-   rectangle so its rows can grow in left to right after the camera settles. */
-function renderGenerations() {
-  const rows = buildGenerationRows();
+/* Draw the tree. Rows are batched per generation and lineage; when the
+   layout changes (rows slide apart to make room for the next generation),
+   every batch's path data is rebuilt from interpolated y positions. */
+let treeBatches = [];
+let treeNames = [];
+function treeMarkD(type, x, y, sc) {
+  if (type === "spouse") return shiftPath(starPath(8 * sc), x, y);
+  if (type === "child") return shiftPath(starPath(7.5 * sc), x, y);
+  if (type === "heartache") return shiftPath(heartPath(7 * sc), x, y);
+  const r = 5 * sc;
+  return "M" + (x - r) + "," + (y - r) + "h" + 2 * r + "v" + 2 * r + "h" + (-2 * r) + "Z";
+}
+const TREE_MARK_FILL = { spouse: "#c4962c", child: "#3d6f9a", heartache: "#d26a8c", want: "#2f7d4a" };
+
+function renderTree() {
+  const T = TREE, D = TREE_DATA, nodes = D.nodes;
   const defs = svg.querySelector("defs") || svgEl("defs", null, svg);
-  const shapes = {
-    spouse: { d: starPath(8), fill: "#c4962c" },
-    child: { d: starPath(7.5), fill: "#3d6f9a" },
-    heartache: { d: heartPath(7), fill: "#d26a8c" },
-    death: { circle: 5.5, fill: "#1c1c1c" },
-    want: { d: "M-5,-5 L5,-5 L5,5 L-5,5 Z", fill: "#2f7d4a" }
-  };
-  GENERATIONS.stepRows.forEach((n, step) => {
-    const mine = rows.filter((r) => r.step === step);
-    const minX = Math.min(...mine.map((r) => r.x0)) - 20;
-    const maxX = Math.max(...mine.map((r) => r.x1)) + 20;
-    const minY = Math.min(...mine.map((r) => r.y)) - 20;
-    const maxY = Math.max(...mine.map((r) => r.y)) + 20;
-    const clip = svgEl("clipPath", { id: "gen-clip-" + step }, defs);
-    svgEl("rect", { x: minX, y: minY, width: maxX - minX, height: maxY - minY, "data-full": maxX - minX, class: "gen-clip-rect", id: "gen-clip-rect-" + step }, clip);
-    const g = svgEl("g", { "data-layer": "gen-" + step, class: "layer gen-step", "clip-path": "url(#gen-clip-" + step + ")" }, svg);
-    const lineD = {}, dotD = {}, markD = {};
-    mine.forEach((r) => {
-      lineD[r.family] = (lineD[r.family] || "") + "M" + r.x0 + "," + r.y + "H" + r.x1;
-      if (step < 2) dotD[r.family] = (dotD[r.family] || "") + "M" + (r.x0 - 4) + "," + r.y + "a4,4 0 1,0 8,0a4,4 0 1,0 -8,0";
-      r.marks.forEach((m) => {
-        const sh = shapes[m.type];
-        const part = sh.circle ? "M" + (m.x - sh.circle) + "," + r.y + "a" + sh.circle + "," + sh.circle + " 0 1,0 " + (2 * sh.circle) + ",0a" + sh.circle + "," + sh.circle + " 0 1,0 " + (-2 * sh.circle) + ",0" : shiftPath(sh.d, m.x, r.y);
-        markD[m.type] = (markD[m.type] || "") + part;
+  treeBatches = [];
+  treeNames = [];
+  // Founders: Lehi, Sariah, and their children (no event marks here)
+  const fg = svgEl("g", { "data-layer": "tree-founders", class: "layer" }, svg);
+  const founderStems = svgEl("path", { d: "", fill: "none", stroke: "#8a7a68", "stroke-width": 1.4, "stroke-dasharray": "2 6", opacity: "0.6", "vector-effect": "non-scaling-stroke", class: "tree-stems" }, fg);
+  treeBatches.push({ el: founderStems, kind: "founder-stems", idx: nodes.map((n, i) => i).filter((i) => nodes[i].gen === 1) });
+  nodes.forEach((n, i) => {
+    if (!n.founder) return;
+    const p = PEOPLE[n.id];
+    const line = svgEl("path", { d: "", fill: "none", stroke: p.color, "stroke-width": p.faint ? 2.2 : 3.2, "stroke-linecap": "round", opacity: p.faint ? "0.55" : "1", "vector-effect": "non-scaling-stroke", class: "tree-founder", "data-person": n.id }, fg);
+    treeBatches.push({ el: line, kind: "founder", idx: [i] });
+    if (p.fadeTo) {
+      const fade = svgEl("path", { d: "", fill: "none", stroke: p.color, "stroke-width": 2.2, "stroke-dasharray": "8 8", opacity: "0.38", "vector-effect": "non-scaling-stroke" }, fg);
+      treeBatches.push({ el: fade, kind: "founder-fade", idx: [i] });
+    }
+  });
+  // Names (shown after the rows settle)
+  const ng = svgEl("g", { "data-layer": "tree-names", class: "layer tree-names" }, svg);
+  nodes.forEach((n, i) => {
+    if (!n.founder || n.id === "sariah") return;
+    const t = svgEl("text", { x: xYear(n.birth) + 20, y: 0, class: "note-label tree-name", "text-anchor": "start" }, ng);
+    t.textContent = n.id === "lehi" ? "Lehi & Sariah" : PEOPLE[n.id].name;
+    treeNames.push({ el: t, idx: i });
+  });
+  // Descendant generations, each its own clipped layer so it can grow in
+  for (let g = 2; g <= T.maxGen; g++) {
+    const mine = nodes.map((n, i) => i).filter((i) => nodes[i].gen === g);
+    if (!mine.length) continue;
+    const minX = Math.min(...mine.map((i) => xYear(nodes[i].birth))) - 40;
+    const maxX = Math.max(...mine.map((i) => xYear(nodes[i].end))) + 40;
+    const clip = svgEl("clipPath", { id: "tree-clip-" + g }, defs);
+    svgEl("rect", { x: minX, y: -2000, width: maxX - minX, height: 40000, "data-full": maxX - minX, class: "tree-clip-rect", id: "tree-clip-rect-" + g }, clip);
+    const outerLayer = g === 2 ? "tree-g2 " + T.lineages.map((l) => "kids-" + l).join(" ") : "tree-g" + g;
+    const outer = svgEl("g", { "data-layer": outerLayer, class: "layer tree-gen", "clip-path": "url(#tree-clip-" + g + ")" }, svg);
+    T.lineages.forEach((lin) => {
+      const idx = mine.filter((i) => nodes[i].lineage === lin);
+      if (!idx.length) return;
+      const color = PEOPLE[lin].color;
+      const inner = g === 2 ? svgEl("g", { "data-layer": "tree-g2 kids-" + lin, class: "layer" }, outer) : svgEl("g", null, outer);
+      const stems = svgEl("path", { d: "", fill: "none", stroke: color, "stroke-width": 1, opacity: "0.45", "vector-effect": "non-scaling-stroke", class: "tree-stems" }, inner);
+      treeBatches.push({ el: stems, kind: "stems", idx: idx });
+      const lines = svgEl("path", { d: "", fill: "none", stroke: color, "stroke-width": T.strokeWidth[g], opacity: g <= 3 ? "0.92" : "0.8", "stroke-linecap": "round", "vector-effect": "non-scaling-stroke", class: "tree-lines", "data-gen": g }, inner);
+      treeBatches.push({ el: lines, kind: "lines", idx: idx });
+      if (g <= 3) {
+        const dots = svgEl("path", { d: "", fill: color, class: "tree-starts" }, inner);
+        treeBatches.push({ el: dots, kind: "dots", idx: idx });
+      }
+      ["spouse", "child", "want", "heartache"].forEach((type) => {
+        const withMark = idx.filter((i) => nodes[i].marks.some((m) => m.type === type));
+        if (!withMark.length) return;
+        const el = svgEl("path", { d: "", fill: TREE_MARK_FILL[type], class: "tree-marks", "data-mark": type }, inner);
+        treeBatches.push({ el: el, kind: "marks", type: type, idx: withMark });
       });
     });
-    const sw = GENERATIONS.strokeWidth[step];
-    Object.keys(lineD).sort().forEach((fam) => {
-      svgEl("path", { d: lineD[fam], fill: "none", stroke: PEOPLE[fam].color, "stroke-width": sw, opacity: "0.78", "stroke-linecap": "round", "vector-effect": "non-scaling-stroke", class: "gen-lines" }, g);
-      if (dotD[fam]) svgEl("path", { d: dotD[fam], fill: PEOPLE[fam].color, opacity: "0.85", class: "gen-starts" }, g);
-    });
-    Object.keys(markD).sort().forEach((type) => {
-      svgEl("path", { d: markD[type], fill: shapes[type].fill, class: "gen-marks", "data-mark": type }, g);
-    });
-  });
+  }
+  state.treeLayout = 1;
+  drawTree(D.layouts[1], D.layouts[1], 1, TREE.markScale[1]);
 }
 
-/* Grow-in: when a scene first reveals a generation step, its rows draw in
-   left to right after the camera settles. Reduced motion shows them at once. */
+function drawTree(Ya, Yb, e, markSc) {
+  const nodes = TREE_DATA.nodes;
+  const yOf = (i) => Math.round((Ya[i] + (Yb[i] - Ya[i]) * e) * 10) / 10;
+  treeBatches.forEach((b) => {
+    let d = "";
+    b.idx.forEach((i) => {
+      const n = nodes[i], y = yOf(i), x0 = Math.round(xYear(n.birth));
+      if (b.kind === "lines") d += "M" + x0 + "," + y + "H" + Math.round(xYear(n.end));
+      else if (b.kind === "founder") { const p = PEOPLE[n.id]; d += "M" + x0 + "," + y + "H" + Math.round(xYear(p.end)); }
+      else if (b.kind === "founder-fade") { const p = PEOPLE[n.id]; d += "M" + Math.round(xYear(p.end)) + "," + y + "H" + Math.round(xYear(p.fadeTo)); }
+      else if (b.kind === "founder-stems") { d += "M" + x0 + "," + yOf(1) + "V" + y; }
+      else if (b.kind === "stems") { d += "M" + x0 + "," + yOf(n.parent) + "V" + y; }
+      else if (b.kind === "dots") { const r = 3 * markSc; d += "M" + (x0 - r) + "," + y + "a" + r + "," + r + " 0 1,0 " + 2 * r + ",0a" + r + "," + r + " 0 1,0 " + (-2 * r) + ",0"; }
+      else if (b.kind === "marks") {
+        n.marks.forEach((m) => { if (m.type === b.type) d += treeMarkD(m.type, Math.round(xYear(m.t)), y, markSc); });
+      }
+    });
+    b.el.setAttribute("d", d);
+  });
+  treeNames.forEach((t) => t.el.setAttribute("y", String(yOf(t.idx) - 16)));
+}
+
+function setTreeLayout(k) {
+  state.treeLayout = k;
+  const L = TREE_DATA.layouts[k];
+  drawTree(L, L, 1, TREE.markScale[k]);
+  const ng = svg && svg.querySelector(".tree-names");
+  if (ng) ng.classList.remove("is-morphing");
+  // name labels are counter-scaled around their own position: refresh after moving them
+  if (svg && svg.getBoundingClientRect && state.camera) updateScaleDependent();
+}
+
+/* Grow-in and slide: when a scene reveals new generations moving forward,
+   rows first slide into the new layout (during the camera move), then each
+   new generation draws in left to right — later in time, further right.
+   Reduced motion, Back, and jumps show the finished state at once. */
 let growTimers = [];
 function cancelGrow() {
   growTimers.forEach((t) => { clearTimeout(t.timeout); if (t.raf) cancelAnimationFrame(t.raf); });
   growTimers = [];
 }
-function setGrow(step, frac) {
-  const rect = svg && svg.querySelector("#gen-clip-rect-" + step);
+function setGrow(gen, frac) {
+  const rect = svg && svg.querySelector("#tree-clip-rect-" + gen);
   if (!rect) return;
   rect.setAttribute("width", String(Math.max(0, parseFloat(rect.getAttribute("data-full")) * frac)));
 }
-function startGrow(scene, delayMs, forward) {
+function nowMs() { return (window.performance && performance.now) ? performance.now() : Date.now(); }
+function runTimed(delay, dur, step) {
+  const timer = { timeout: null, raf: null };
+  timer.timeout = setTimeout(() => {
+    const start = nowMs();
+    function frame(now) {
+      const t = Math.min(1, (now - start) / dur);
+      step(easeInOutSine(t), t >= 1);
+      if (t < 1) timer.raf = requestAnimationFrame(frame);
+    }
+    timer.raf = requestAnimationFrame(frame);
+  }, delay);
+  growTimers.push(timer);
+}
+function startTree(scene, camMs, forward) {
   cancelGrow();
-  GENERATIONS.stepRows.forEach((n, step) => setGrow(step, 1));
-  const steps = scene.grow || [];
-  if (!steps.length || !forward || prefersReduced()) return;
-  steps.forEach((step) => {
-    setGrow(step, 0);
-    const timer = { timeout: null, raf: null };
-    timer.timeout = setTimeout(() => {
-      const start = (window.performance && performance.now) ? performance.now() : Date.now();
-      function frame(now) {
-        const t = Math.min(1, (now - start) / GENERATIONS.growMs);
-        setGrow(step, easeInOutSine(t));
-        if (t < 1) timer.raf = requestAnimationFrame(frame);
-      }
-      timer.raf = requestAnimationFrame(frame);
-    }, delayMs + 120);
-    growTimers.push(timer);
+  const T = TREE;
+  for (let g = 2; g <= T.maxGen; g++) setGrow(g, 1);
+  const target = scene.treeLayout || 1;
+  const from = state.treeLayout || 1;
+  const reveal = scene.reveal || [];
+  if (!forward || prefersReduced() || !reveal.length) { setTreeLayout(target); return; }
+  reveal.forEach((g) => setGrow(g, 0));
+  let t0 = camMs + 120;
+  if (from !== target) {
+    const A = TREE_DATA.layouts[from], B = TREE_DATA.layouts[target];
+    const sa = T.markScale[from], sb = T.markScale[target];
+    const ng = svg.querySelector(".tree-names");
+    if (ng) ng.classList.add("is-morphing");
+    state.treeLayout = target;
+    const dur = Math.max(T.morphMs, camMs);
+    runTimed(0, dur, (e, done) => {
+      drawTree(A, B, e, sa + (sb - sa) * e);
+      if (done) { setTreeLayout(target); updateScaleDependent(); }
+    });
+    t0 = dur + 150;
+  } else {
+    setTreeLayout(target);
+  }
+  reveal.forEach((g) => {
+    const dur = g === T.maxGen ? T.growMs * 1.5 : T.growMs;
+    runTimed(t0, dur, (e) => setGrow(g, e));
+    t0 += dur + 120;
   });
 }
 
@@ -1751,9 +1945,10 @@ function renderLehi() {
   // Family lanes
   L.people.forEach((person, i) => {
     const y = person.y;
-    svgEl("circle", { cx: L.startX, cy: y, r: 8, fill: person.color }, g);
-    svgEl("line", { x1: L.startX, x2: L.dreamX, y1: y, y2: y, stroke: person.color, "stroke-width": 6, "stroke-linecap": "round" }, g);
-    text(L.startX + 18, y - 18, person.name, "lehi-label");
+    const sx = L.startX + (person.born || 0);   // children begin at birth, after their parents
+    svgEl("circle", { cx: sx, cy: y, r: 8, fill: person.color }, g);
+    svgEl("line", { x1: sx, x2: L.dreamX, y1: y, y2: y, stroke: person.color, "stroke-width": 6, "stroke-linecap": "round" }, g);
+    text(sx + 18, y - 18, person.name, "lehi-label");
     if (person.toward === "tree") {
       const yy = rd.y - 10 - i * 9;
       const d = "M" + L.dreamX + "," + y +
@@ -1813,8 +2008,8 @@ function applyHighlights(ids) {
   }
 }
 
-function applyCaptionScale(selector, baseFont, targetPx, spu) {
-  const scale = clamp(targetPx / (baseFont * Math.max(spu, 0.05)), 0.45, 2.6);
+function applyCaptionScale(selector, baseFont, targetPx, spu, maxScale) {
+  const scale = clamp(targetPx / (baseFont * Math.max(spu, 0.005)), 0.45, maxScale || 2.6);
   const nodes = svg.querySelectorAll(selector);
   for (let i = 0; i < nodes.length; i++) {
     const node = nodes[i];
@@ -1834,6 +2029,7 @@ function updateScaleDependent() {
   applyCaptionScale(".scale-ann", 18, 18, spu);
   applyCaptionScale(".scale-banner", 16, 17, spu);
   applyCaptionScale(".legend-text", 12, 15, spu);
+  applyCaptionScale(".tree-name", 18, 16, spu, 16);
   hideOverflowingLabels();
   if (state.explore && state.camera.w < 1650) svg.classList.add("tight-captions");
   else svg.classList.remove("tight-captions");
@@ -2032,7 +2228,7 @@ function applyScene(index, opts) {
   const vb = resolveView(scene.view);
   const ms = opts.instant ? 0 : durationFor(state.camera, vb);
   animateCamera(vb, ms);
-  startGrow(scene, prefersReduced() ? 0 : ms, forward && !opts.instant);
+  startTree(scene, prefersReduced() ? 0 : ms, forward && !opts.instant);
   updateChrome();
 }
 
@@ -2179,6 +2375,31 @@ function bind() {
   });
   document.addEventListener("keydown", handleKey);
   window.addEventListener("resize", updateScaleDependent);
+  window.addEventListener("orientationchange", () => setTimeout(updateScaleDependent, 250));
+  bindSwipe($("stage"));
+  // Small screens clamp the narration; tap the header to read all of it.
+  $("overlay").addEventListener("click", () => $("overlay").classList.toggle("is-expanded"));
+}
+
+/* Swipe left/right on the stage to change scenes (phones and tablets). */
+function bindSwipe(el) {
+  if (!el || !el.addEventListener) return;
+  let sx = 0, sy = 0, st = 0, tracking = false;
+  el.addEventListener("touchstart", (e) => {
+    if (!e.touches || e.touches.length !== 1) { tracking = false; return; }
+    tracking = true;
+    sx = e.touches[0].clientX; sy = e.touches[0].clientY; st = Date.now();
+  }, { passive: true });
+  el.addEventListener("touchend", (e) => {
+    if (!tracking) return;
+    tracking = false;
+    const t = e.changedTouches && e.changedTouches[0];
+    if (!t) return;
+    const dx = t.clientX - sx, dy = t.clientY - sy;
+    if (state.help || state.legend || state.notes || state.index) return;
+    if (Date.now() - st > 900 || Math.abs(dx) < 50 || Math.abs(dx) < 1.5 * Math.abs(dy)) return;
+    if (dx < 0) goNext(); else goBack();
+  }, { passive: true });
 }
 
 function buildIndex() {
@@ -2234,7 +2455,7 @@ function init() {
 }
 
 globalThis.Lifelines = {
-  META, PEOPLE, EVENTS, SCENES, ORDINARY, BRANCHES, ANNOTATIONS, WORLD, LEHI, ERAS, GENERATIONS, buildGenerationRows, labelBox,
+  META, PEOPLE, EVENTS, SCENES, ORDINARY, BRANCHES, ANNOTATIONS, WORLD, LEHI, ERAS, TREE, TREE_DATA, buildTree, labelBox, setTreeLayout,
   xYear, resolveView, durationFor, easeInOutSine, eventPoint,
   getState, applyScene, goNext, goBack, restart, exploreEvent, hideOverflowingLabels,
   returnToPresentation, handleKey, prefersReduced, toggleMotion,
