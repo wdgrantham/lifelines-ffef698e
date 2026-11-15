@@ -1,0 +1,2250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="color-scheme" content="light" />
+  <title>Lifelines — Lehi’s Family (v1.8)</title>
+  <!-- lifelines build v1.8 -->
+  <style>
+    :root {
+      --bg: #f3eadc;
+      --bg-2: #eadcc8;
+      --paper: #fbf6ee;
+      --ink: #3c3127;
+      --ink-soft: #5c4f42;
+      --muted: #7d6e5e;
+      --line: #d8c7b0;
+      --accent: #8a4b2c;
+      --accent-soft: #c4875a;
+      --gold: #c4962c;
+      --panel: rgba(251, 246, 238, 0.94);
+      --shadow: 0 10px 36px rgba(72, 48, 24, 0.1);
+      --daniel: #5a3e2b;
+      --ruth: #9a4e56;
+      --sam: #2f6a78;
+      --maya: #b06a1f;
+      --eli: #4f6b3a;
+      --future: #c47a9a;
+      --death: #1c1c1c;
+      --illness: #2f7d4a;
+      --heartache: #d26a8c;
+      --harm: #b33a32;
+      --safe: 1280px;
+      color: var(--ink);
+    }
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      height: 100%;
+      background:
+        radial-gradient(1200px 500px at 50% -10%, rgba(255,255,255,0.55), transparent 60%),
+        linear-gradient(180deg, var(--bg) 0%, var(--bg-2) 100%);
+      font-family: Georgia, "Palatino Linotype", Palatino, "Times New Roman", serif;
+    }
+    body {
+      min-height: 100%;
+      color: var(--ink);
+    }
+    button, .ui {
+      font-family: "Segoe UI", "Source Sans 3", system-ui, sans-serif;
+    }
+    #app {
+      height: 100%;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    #overlay {
+      flex: 0 0 auto;
+      padding: 16px 28px 10px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 6px 24px;
+      align-items: start;
+      background: linear-gradient(180deg, rgba(243,234,220,0.97), rgba(243,234,220,0.88) 70%, transparent);
+      z-index: 3;
+    }
+    .brand {
+      grid-column: 1;
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+      color: var(--muted);
+      font-family: "Segoe UI", system-ui, sans-serif;
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .brand strong {
+      color: var(--accent);
+      font-weight: 700;
+      letter-spacing: 0.12em;
+    }
+    #progress-label {
+      grid-column: 2;
+      font-family: "Segoe UI", system-ui, sans-serif;
+      font-size: 13px;
+      color: var(--muted);
+      padding-top: 1px;
+    }
+    #scene-title {
+      grid-column: 1 / -1;
+      margin: 2px 0 0;
+      font-size: clamp(26px, 3.2vw, 36px);
+      line-height: 1.15;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+    }
+    #scene-narration, #explore-detail {
+      grid-column: 1 / -1;
+      margin: 4px 0 0;
+      max-width: 78ch;
+      font-size: clamp(16px, 1.55vw, 20px);
+      line-height: 1.45;
+      color: var(--ink-soft);
+    }
+    #scene-question {
+      grid-column: 1 / -1;
+      margin: 8px 0 0;
+      max-width: 70ch;
+      font-size: clamp(17px, 1.7vw, 22px);
+      line-height: 1.35;
+      color: var(--accent);
+      font-style: italic;
+    }
+    #scene-action {
+      grid-column: 1 / -1;
+      margin: 8px 0 0;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      width: fit-content;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: rgba(196, 150, 44, 0.16);
+      border: 1px solid rgba(196, 150, 44, 0.45);
+      color: #6b4b10;
+      font-size: clamp(16px, 1.5vw, 20px);
+      font-weight: 600;
+    }
+    #scene-action::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--gold);
+      box-shadow: 0 0 0 4px rgba(196,150,44,0.18);
+    }
+    .is-hidden-vis { display: none !important; }
+    #stage {
+      flex: 1 1 auto;
+      min-height: 0;
+      position: relative;
+      display: flex;
+      flex-direction: row;
+      align-items: stretch;
+      margin: 0 18px;
+      border: 1px solid rgba(90, 62, 43, 0.12);
+      border-radius: 18px;
+      background:
+        linear-gradient(180deg, rgba(255,252,246,0.75), rgba(251,246,238,0.9)),
+        var(--paper);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    #person-rail {
+      position: relative;
+      flex: 0 0 auto;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      gap: 8px;
+      padding: 42px 12px 16px 12px;
+      pointer-events: none;
+      background: linear-gradient(90deg, rgba(251,246,238,0.94), rgba(251,246,238,0.35));
+    }
+    #person-rail.is-empty { display: none; }
+    #stage-plot {
+      position: relative;
+      flex: 1 1 auto;
+      min-width: 0;
+      min-height: 0;
+      height: 100%;
+      overflow: hidden;
+    }
+    #world { overflow: hidden; }
+    #world .is-clipped-hidden { visibility: hidden !important; }
+    #build-version {
+      display: inline-block;
+      margin-left: 10px;
+      padding: 1px 8px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      font-size: 11px;
+      letter-spacing: 0.06em;
+      color: var(--accent);
+    }
+    .rail-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 4px 10px 4px 6px;
+      background: rgba(251,246,238,0.82);
+      border-radius: 999px;
+      font-family: "Segoe UI", system-ui, sans-serif;
+      font-size: 13px;
+      color: var(--ink-soft);
+      box-shadow: 0 1px 0 rgba(255,255,255,0.8);
+    }
+    .rail-item i {
+      width: 18px;
+      height: 3px;
+      border-radius: 2px;
+      display: inline-block;
+    }
+    #year-ruler {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 0;
+      height: 34px;
+      z-index: 2;
+      pointer-events: none;
+      background: linear-gradient(180deg, rgba(251,246,238,0.9), rgba(251,246,238,0));
+      font-family: "Segoe UI", system-ui, sans-serif;
+      color: var(--muted);
+    }
+    #year-ruler span {
+      position: absolute;
+      top: 8px;
+      font-size: 12px;
+      letter-spacing: 0.04em;
+    }
+    #year-ruler span.era {
+      top: 6px;
+      padding: 2px 6px;
+      box-sizing: border-box;
+      text-align: center;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      border-left: 1px solid rgba(92,79,66,0.28);
+    }
+    #world {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+    #world .is-hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+    #world .event { cursor: pointer; }
+    #world .event .hit {
+      fill: transparent;
+    }
+    #world .caption {
+      font-family: "Segoe UI", system-ui, sans-serif;
+      font-size: 12px;
+      fill: var(--ink-soft);
+      paint-order: stroke;
+      stroke: rgba(251,246,238,0.86);
+      stroke-width: 4px;
+      stroke-linejoin: round;
+    }
+    #world .event-caption { opacity: 0; }
+    #world .event.is-highlight .event-caption,
+    #world.tight-captions .event-caption { opacity: 1; }
+    #world .person-label {
+      font-family: Georgia, serif;
+      font-size: 34px;
+      fill: var(--ink);
+    }
+    #world .note-label {
+      font-family: Georgia, serif;
+      font-size: 18px;
+      fill: var(--ink-soft);
+    }
+    #world .branch-sub {
+      font-family: "Segoe UI", system-ui, sans-serif;
+      font-size: 16px;
+      fill: var(--ink-soft);
+    }
+    #world .lehi-title { font-family: Georgia, serif; font-size: 54px; fill: var(--ink); }
+    #world .lehi-label { font-family: Georgia, serif; font-size: 42px; fill: var(--ink); }
+    #world .lehi-small {
+      font-family: "Segoe UI", system-ui, sans-serif; font-size: 33px; fill: var(--ink-soft);
+      paint-order: stroke; stroke: rgba(251,246,238,0.9); stroke-width: 8px; stroke-linejoin: round;
+    }
+    #world .lehi-italic { font-style: italic; }
+    #world .lehi-banner {
+      font-family: "Segoe UI", system-ui, sans-serif; font-size: 30px; font-weight: 700;
+      letter-spacing: 0.06em; fill: var(--accent);
+    }
+    #world .legend-text {
+      font-family: "Segoe UI", system-ui, sans-serif; font-size: 12px; fill: var(--ink-soft);
+    }
+    #world .legend-title { font-weight: 700; fill: var(--ink); }
+    #world .note-label.scale-ann {
+      paint-order: stroke; stroke: rgba(251,246,238,0.9); stroke-width: 4px; stroke-linejoin: round;
+    }
+    #world .banner-label {
+      font-family: "Segoe UI", system-ui, sans-serif;
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      fill: var(--accent);
+    }
+    #explore-bar {
+      position: absolute;
+      right: 16px;
+      bottom: 16px;
+      z-index: 4;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 8px 10px 8px 14px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      box-shadow: var(--shadow);
+    }
+    #controls {
+      flex: 0 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px 16px;
+      padding: 10px 20px 14px;
+      z-index: 5;
+    }
+    .ctrl-cluster {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+    }
+    .btn {
+      appearance: none;
+      border: 1px solid rgba(90, 62, 43, 0.2);
+      background: rgba(251,246,238,0.9);
+      color: var(--ink);
+      border-radius: 999px;
+      min-height: 42px;
+      padding: 0 14px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+    .btn:hover, .btn:focus-visible {
+      border-color: var(--accent);
+      outline: 2px solid transparent;
+      box-shadow: 0 0 0 3px rgba(138,75,44,0.16);
+    }
+    .btn[aria-pressed="true"] {
+      background: rgba(138,75,44,0.1);
+      border-color: var(--accent);
+    }
+    .btn-primary {
+      background: var(--accent);
+      color: #fff8f2;
+      border-color: transparent;
+      min-width: 92px;
+      font-weight: 600;
+    }
+    .btn-primary:hover, .btn-primary:focus-visible {
+      box-shadow: 0 0 0 3px rgba(138,75,44,0.22);
+    }
+    .btn:disabled {
+      opacity: 0.38;
+      cursor: default;
+      box-shadow: none;
+    }
+    #progress-dots {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    #progress-dots button {
+      width: 11px;
+      height: 11px;
+      padding: 0;
+      border-radius: 50%;
+      border: 1px solid rgba(90,62,43,0.35);
+      background: transparent;
+      cursor: pointer;
+    }
+    #progress-dots button[aria-current="true"] {
+      background: var(--accent);
+      border-color: var(--accent);
+      transform: scale(1.15);
+    }
+    .disclaimer {
+      flex: 1 1 100%;
+      text-align: center;
+      font-family: "Segoe UI", system-ui, sans-serif;
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .panel {
+      position: fixed;
+      inset: 0;
+      z-index: 20;
+      background: rgba(60, 49, 39, 0.18);
+      display: flex;
+      align-items: stretch;
+      justify-content: flex-end;
+    }
+    .panel.center {
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .panel[hidden] { display: none !important; }
+    .panel-card {
+      width: min(420px, 100%);
+      background: var(--paper);
+      border-left: 1px solid var(--line);
+      box-shadow: var(--shadow);
+      padding: 22px 22px 28px;
+      overflow: auto;
+    }
+    .panel.center .panel-card {
+      width: min(620px, 100%);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      max-height: min(80vh, 760px);
+    }
+    .panel-card header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .panel-card h2 {
+      margin: 0;
+      font-size: 24px;
+    }
+    .icon-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: 1px solid var(--line);
+      background: transparent;
+      cursor: pointer;
+      font-size: 22px;
+      line-height: 1;
+      color: var(--ink-soft);
+    }
+    .legend-list, .index-list, .help-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+    .legend-list li, .help-list li {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      padding: 10px 0;
+      border-top: 1px solid rgba(216,199,176,0.7);
+    }
+    .legend-list svg {
+      width: 28px;
+      height: 28px;
+      flex: 0 0 auto;
+      margin-top: 2px;
+    }
+    .legend-list strong, .help-list strong { display: block; }
+    .legend-list span, .help-list span, .panel-card p {
+      color: var(--ink-soft);
+      font-family: "Segoe UI", system-ui, sans-serif;
+      font-size: 14px;
+      line-height: 1.45;
+    }
+    .index-list button {
+      width: 100%;
+      text-align: left;
+      border: 0;
+      background: transparent;
+      padding: 9px 8px;
+      border-radius: 8px;
+      cursor: pointer;
+      font: inherit;
+      color: inherit;
+    }
+    .index-list button[aria-current="true"] {
+      background: rgba(138,75,44,0.1);
+      color: var(--accent);
+    }
+    .index-list button:hover, .index-list button:focus-visible {
+      background: rgba(138,75,44,0.08);
+    }
+    .index-list em {
+      display: inline-block;
+      width: 2ch;
+      color: var(--muted);
+      font-style: normal;
+      margin-right: 8px;
+      font-family: "Segoe UI", system-ui, sans-serif;
+      font-size: 13px;
+    }
+    kbd {
+      display: inline-block;
+      min-width: 1.5em;
+      padding: 1px 6px;
+      border: 1px solid var(--line);
+      border-bottom-width: 2px;
+      border-radius: 5px;
+      background: #fff;
+      font-family: "Segoe UI", system-ui, sans-serif;
+      font-size: 12px;
+    }
+    #live { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+    @media (max-width: 800px) {
+      #overlay { padding: 12px 14px 8px; }
+      #scene-title { font-size: 22px; }
+      #scene-narration, #explore-detail, #scene-question { font-size: 15px; }
+      #stage { margin: 0 8px; border-radius: 12px; }
+      #person-rail { display: none; }
+      #controls { padding: 8px 10px 12px; }
+      .btn { min-height: 40px; }
+      .disclaimer { text-align: left; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation: none !important;
+        transition: none !important;
+        scroll-behavior: auto !important;
+      }
+    }
+    html.reduce-motion *, html.reduce-motion *::before, html.reduce-motion *::after {
+      animation: none !important;
+      transition: none !important;
+    }
+    .event.is-highlight .ring {
+      fill: none;
+      stroke: var(--accent-soft);
+      stroke-width: 2;
+      transform-origin: center;
+      transform-box: fill-box;
+      animation: ringpulse 2.4s ease-in-out infinite;
+    }
+    @keyframes ringpulse {
+      0%, 100% { opacity: 0.85; transform: scale(1); }
+      50% { opacity: 0.25; transform: scale(1.22); }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <header id="overlay">
+      <div class="brand"><strong>Lifelines</strong> <span>Lehi’s family · Book of Mormon · schematic timeline</span></div>
+      <div id="progress-label">1 / 18</div>
+      <h1 id="scene-title">One Life: Lehi</h1>
+      <p id="scene-narration"></p>
+      <p id="explore-detail" class="is-hidden-vis"></p>
+      <p id="scene-question"></p>
+      <p id="scene-action" class="is-hidden-vis"></p>
+    </header>
+
+    <div id="stage">
+      <aside id="person-rail" aria-hidden="true"></aside>
+      <div id="stage-plot">
+        <div id="year-ruler" aria-hidden="true"></div>
+        <svg id="world" viewBox="0 0 6500 2800" preserveAspectRatio="xMidYMid meet" role="group" aria-label="Zoomable lifelines of Lehi’s family and the generations that followed"></svg>
+        <div id="explore-bar" class="is-hidden-vis">
+          <span id="explore-label" class="ui">Looking closer</span>
+          <button type="button" class="btn btn-primary" id="btn-return">Return to presentation</button>
+        </div>
+      </div>
+    </div>
+
+    <footer id="controls">
+      <div class="ctrl-cluster">
+        <button type="button" class="btn" id="btn-help" title="Help">Help</button>
+        <button type="button" class="btn" id="btn-legend" aria-pressed="false">Legend</button>
+        <button type="button" class="btn" id="btn-notes" aria-pressed="false">Notes</button>
+        <button type="button" class="btn" id="btn-index" aria-pressed="false">Scenes</button>
+        <button type="button" class="btn" id="btn-motion" aria-pressed="false" title="Reduced motion">Motion</button>
+        <button type="button" class="btn" id="btn-full" title="Fullscreen">Full screen</button>
+      </div>
+      <div class="ctrl-cluster">
+        <button type="button" class="btn" id="btn-back">Back</button>
+        <div id="progress-dots" aria-label="Scene progress"></div>
+        <button type="button" class="btn btn-primary" id="btn-next">Next</button>
+      </div>
+      <div class="disclaimer">Lehi’s family from the Book of Mormon; time is schematic and dates approximate. Branches are possibilities, not predictions. Covenants connect us to Christ; they do not erase hardship. <span id="build-version">v1.8</span></div>
+    </footer>
+  </div>
+
+  <div id="live" aria-live="polite"></div>
+
+  <div id="panel-legend" class="panel" hidden>
+    <div class="panel-card" role="dialog" aria-labelledby="legend-title">
+      <header>
+        <h2 id="legend-title">How to read the marks</h2>
+        <button type="button" class="icon-btn" data-close="legend" aria-label="Close legend">×</button>
+      </header>
+      <p>Color is paired with shape. These marks are teaching symbols, not a coded diagnosis of anyone’s life.</p>
+      <ul class="legend-list">
+        <li>
+          <svg viewBox="-12 -12 24 24" aria-hidden="true"><circle cx="0" cy="0" r="6" fill="#1c1c1c"/></svg>
+          <div><strong>Black circle — death</strong><span>The death of someone close: a father, a father-in-law, family or friends.</span></div>
+        </li>
+        <li>
+          <svg viewBox="-12 -12 24 24" aria-hidden="true"><rect x="-6" y="-6" width="12" height="12" rx="2" fill="#2f7d4a"/></svg>
+          <div><strong>Green square — want, hunger, or illness</strong><span>Not enough to eat, exhaustion, or sickness — like the hunger at the broken bow (1 Ne 16:18–20) or sick-beds of grief (18:17–18).</span></div>
+        </li>
+        <li>
+          <svg viewBox="-12 -12 24 24" aria-hidden="true"><path d="M0 6 C0 6 -9 -1 -9 -5.2 C-9 -8.2 -6.6 -10 -4.2 -10 C-2.2 -10 0 -8.6 0 -7 C0 -8.6 2.2 -10 4.2 -10 C6.6 -10 9 -8.2 9 -5.2 C9 -1 0 6 0 6Z" fill="#d26a8c"/></svg>
+          <div><strong>Pink heart — heartache</strong><span>Grief, fear, mourning, strain, or a painful moment in the family.</span></div>
+        </li>
+        <li>
+          <svg viewBox="-12 -12 24 24" aria-hidden="true"><path d="M0 -8 L8 0 L0 8 L-8 0 Z" fill="#b33a32"/></svg>
+          <div><strong>Red diamond — harm by another</strong><span>Violence inflicted by someone else. The person harmed is not at fault.</span></div>
+        </li>
+        <li>
+          <svg viewBox="-12 -12 24 24" aria-hidden="true"><circle r="7" fill="#fbf6ee" stroke="#8a4b2c" stroke-width="2"/><circle r="3" fill="#8a4b2c"/></svg>
+          <div><strong>Ringed dot — revelation</strong><span>A vision, dream, witness, or direction from the Lord. Mothers receive revelation too (1 Ne 5:8).</span></div>
+        </li>
+        <li>
+          <svg viewBox="-12 -12 24 24" aria-hidden="true"><circle r="6" fill="#fbf6ee" stroke="#7a6f62" stroke-width="2"/></svg>
+          <div><strong>Open ring — turning point</strong><span>A step taken in the story: joining the journey, asking a father, finding food, leaving with Nephi.</span></div>
+        </li>
+        <li>
+          <svg viewBox="-12 -12 24 24" aria-hidden="true"><path d="M0 -8 L2.3 -2.6 L8 -2.5 L3.4 1.2 L5.1 6.8 L0 3.6 L-5.1 6.8 L-3.4 1.2 L-8 -2.5 L-2.3 -2.6 Z" fill="#c4962c"/></svg>
+          <div><strong>Gold star — spouse</strong><span>Marriage. Two lines travel together; neither line is absorbed into the other.</span></div>
+        </li>
+        <li>
+          <svg viewBox="-12 -12 24 24" aria-hidden="true"><path d="M0 -8 L2.3 -2.6 L8 -2.5 L3.4 1.2 L5.1 6.8 L0 3.6 L-5.1 6.8 L-3.4 1.2 L-8 -2.5 L-2.3 -2.6 Z" fill="#3d6f9a"/></svg>
+          <div><strong>Blue star — children</strong><span>A child’s arrival, like Jacob and Joseph born in the wilderness (1 Ne 18:7). Color marks generation, not gender.</span></div>
+        </li>
+        <li>
+          <svg viewBox="-12 -12 24 24" aria-hidden="true"><path d="M0 -8 L2.3 -2.6 L8 -2.5 L3.4 1.2 L5.1 6.8 L0 3.6 L-5.1 6.8 L-3.4 1.2 L-8 -2.5 L-2.3 -2.6 Z" fill="#c47a9a"/></svg>
+          <div><strong>Pink star — grandchildren</strong><span>Lehi’s grandchildren, whom he blessed (2 Ne 4:3–9).</span></div>
+        </li>
+        <li>
+          <svg viewBox="-14 -14 28 28" aria-hidden="true"><path d="M0 -11 L9 -7.5 V2 C9 8 0 12 0 12 C0 12 -9 8 -9 2 V-7.5 Z" fill="#7a6236"/></svg>
+          <div><strong>Shield — sacred moments</strong><span>An altar and offerings (1 Ne 2:7; 5:9; 7:22), a father’s blessings (2 Ne 1–4), consecration to serve (2 Ne 5:26), and the temple Nephi built (2 Ne 5:16). They connect people to Christ; they do not prevent hardship.</span></div>
+        </li>
+      </ul>
+      <p>Positions are schematic: time runs left to right but is not to scale, and dates are approximate.</p>
+    </div>
+  </div>
+
+  <div id="panel-notes" class="panel" hidden>
+    <div class="panel-card" role="dialog" aria-labelledby="notes-title">
+      <header>
+        <h2 id="notes-title">Presenter notes</h2>
+        <button type="button" class="icon-btn" data-close="notes" aria-label="Close notes">×</button>
+      </header>
+      <p id="notes-body"></p>
+      <p>Optional references, without quotation here: Mosiah 18:8–10; Alma 7:11–12; Doctrine and Covenants 121:41–46.</p>
+    </div>
+  </div>
+
+  <div id="panel-help" class="panel center" hidden>
+    <div class="panel-card" role="dialog" aria-labelledby="help-title">
+      <header>
+        <h2 id="help-title">How to use this teaching</h2>
+        <button type="button" class="icon-btn" data-close="help" aria-label="Close help">×</button>
+      </header>
+      <p>This is one continuous picture, not a stack of separate slides. The camera pans and zooms through a shared world of lifelines. It follows Lehi’s family from the Book of Mormon (1 Nephi 1 – 2 Nephi 5), then pulls back to a field of the generations that followed. Every mark cites its verses; time is schematic and not to scale.</p>
+      <ul class="help-list">
+        <li><div><strong>Move through the presentation</strong><span><kbd>→</kbd> <kbd>Space</kbd> <kbd>Page Down</kbd> or Next. <kbd>←</kbd> <kbd>Page Up</kbd> or Back. A clicker should work the same way.</span></div></li>
+        <li><div><strong>Look closer</strong><span>Click a highlighted event to zoom in. Use <em>Return to presentation</em> when you are ready to continue the guided path.</span></div></li>
+        <li><div><strong>Other keys</strong><span><kbd>F</kbd> full screen · <kbd>R</kbd> restart · <kbd>L</kbd> legend · <kbd>N</kbd> notes · <kbd>I</kbd> scene list · <kbd>M</kbd> reduced motion · <kbd>?</kbd> help · <kbd>Esc</kbd> close a panel or leave a close-up.</span></div></li>
+        <li><div><strong>What this is not</strong><span>It is not a promise that revelation will arrive on cue, or that any choice guarantees an outcome. Possible branches stay unfinished on purpose.</span></div></li>
+      </ul>
+    </div>
+  </div>
+
+  <div id="panel-index" class="panel center" hidden>
+    <div class="panel-card" role="dialog" aria-labelledby="index-title">
+      <header>
+        <h2 id="index-title">Scenes</h2>
+        <button type="button" class="icon-btn" data-close="index" aria-label="Close scene list">×</button>
+      </header>
+      <ol id="scene-index-list" class="index-list"></ol>
+    </div>
+  </div>
+
+  <script>
+/* =============================================================================
+   EDITABLE DATA
+   -----------------------------------------------------------------------------
+   Lehi's family, drawn only from the Book of Mormon (1 Nephi 1 – 2 Nephi 5,
+   with a schematic field of later generations).
+   Every event detail cites its verses. Time is SCHEMATIC: the x position is
+   relative order, not a scale. No exact ages or years are claimed; the
+   record gives only approximate anchors (about 600 BC; about eight years in
+   the wilderness, 1 Ne 17:4; about thirty years after leaving, 2 Ne 5:28).
+
+   PEOPLE: each person owns a distinct horizontal line (y position).
+   EVENTS: placed on a person's line at schematic time t (0–100), unless x/y
+           are given (used for the dream region).
+   SCENES: camera stops in ONE shared world. `show` lists visible layers.
+   ============================================================================= */
+
+const META = {
+  title: "Lifelines",
+  audience: "PP6 elders quorum",
+  disclaimer: "Lehi’s family from the Book of Mormon. Schematic time, not to scale.",
+  build: "v1.8"
+};
+
+/* World coordinates: x = schematic time t (0–100) for the family story,
+   y = a person's own lane. The generations field sits to the right. */
+const YEAR0 = 0;           // t = 0 : Jerusalem, about 600 BC
+const YEAR_END = 100;      // t = 100 : about 30 years after leaving (2 Ne 5:28)
+const PX_PER_YEAR = 29;    // world units per schematic step (not years)
+const ORIGIN_X = 200;
+const WORLD = { width: 6500, height: 2800 };
+
+function xYear(t) {
+  return ORIGIN_X + (t - YEAR0) * PX_PER_YEAR;
+}
+const xT = xYear;
+
+/* Generations (scenes 15–17): many lifelines drawn exactly like the family's,
+   one straight horizontal row per person from birth to death, in one
+   continuous stack below the family. Each row starts a little later than the
+   one above. Revealed in three steps, each zoom-out adding new lives.
+   Schematic, not population data or a genealogy. Rows never cross. */
+const GENERATIONS = {
+  seed: 600,                         // deterministic layout (same picture every time)
+  stepRows: [36, 300, 1300],         // rows revealed in scenes 15, 16, 17
+  top: 1300,                         // first row, just below Ishmael's household
+  pitchMax: 12, pitchMin: 2, pitchDecay: 220,   // row spacing tightens smoothly with depth
+  firstBirth: xYear(55),             // grandchildren begin in the wilderness years
+  stepMax: 45, stepMin: 5.5, stepDecay: 120,        // each row is born a little later
+  jitter: 10,
+  lifeMin: 2300,                     // a life is about as long as the family's lines
+  lifeMax: 3000,
+  markRate: [1, 1, 0.5],             // share of the event markers per step
+  strokeWidth: [1.5, 1, 0.8],
+  growMs: 1400,                      // grow-in duration after the camera settles
+  roots: ["laman", "lemuel", "sam", "nephi", "jacob", "joseph", "sisters", "ishmael"]
+};
+
+/* Era labels for the ruler (world x ranges). Dates are approximate. */
+const ERAS = [
+  { x0: xYear(0),  x1: xYear(10),  label: "Jerusalem · about 600 BC" },
+  { x0: xYear(10), x1: xYear(34),  label: "Valley of Lemuel (1 Ne 2–16)" },
+  { x0: xYear(34), x1: xYear(62),  label: "Wilderness journey (1 Ne 16–17)" },
+  { x0: xYear(62), x1: xYear(70),  label: "Bountiful (1 Ne 17)" },
+  { x0: xYear(70), x1: xYear(78),  label: "On the sea (1 Ne 18)" },
+  { x0: xYear(78), x1: xYear(100), label: "Promised land (2 Ne 1–5)" }
+];
+
+const PEOPLE = {
+  lehi:    { name: "Lehi",    color: "#6b4a2e", y: 240,  start: 0,  end: 90 },
+  sariah:  { name: "Sariah",  color: "#9a4e56", y: 350,  start: 0,  end: 80, fadeTo: 94, endNote: "her death is not recorded" },
+  laman:   { name: "Laman",   color: "#8a6a3a", y: 480,  start: 0,  end: 100 },
+  lemuel:  { name: "Lemuel",  color: "#7a5c6e", y: 580,  start: 0,  end: 100 },
+  sam:     { name: "Sam",     color: "#4f6b3a", y: 680,  start: 0,  end: 100 },
+  nephi:   { name: "Nephi",   color: "#2f6a78", y: 780,  start: 0,  end: 100 },
+  jacob:   { name: "Jacob",   color: "#4a5f96", y: 900,  start: 50, end: 100, born: true },
+  joseph:  { name: "Joseph",  color: "#6f7d3a", y: 990,  start: 56, end: 100, born: true },
+  sisters: { name: "Nephi’s sisters", color: "#a5707f", y: 1080, start: 84, end: 100, faint: true },
+  ishmael: { name: "Ishmael’s household", color: "#8a7358", y: 1190, start: 20, end: 100 }
+};
+
+/* type: death · want (hunger/illness) · heartache · harm · spouse · child ·
+         grandchild · altar · blessing · consecration · temple (shields) ·
+         revelation · moment.  `year` holds schematic time t. */
+const EVENTS = [
+  // --- Lehi ---
+  { id: "l-wife", person: "lehi", year: 0.6, type: "spouse", label: "Sariah, his wife (1 Ne 2:5)", labelDy: 34, detail: "Lehi and Sariah are already married when the record opens; Nephi names his mother Sariah (1 Nephi 2:5). No wedding date is given." },
+  { id: "l-vision", person: "lehi", year: 3, type: "revelation", label: "Vision and call (1 Ne 1)", detail: "Lehi prays for his people, sees a pillar of fire and a vision of God, and is called to prophesy in Jerusalem; the people mock him and seek his life (1 Nephi 1:5–20)." },
+  { id: "l-leave", person: "lehi", year: 9, type: "revelation", label: "Told in a dream to leave (1 Ne 2:2)", labelDy: 34, detail: "The Lord commands Lehi in a dream to take his family into the wilderness. He leaves his house, his land, his gold and silver and precious things (1 Nephi 2:1–4)." },
+  { id: "l-altar", person: "lehi", year: 12, type: "altar", label: "An altar of thanks (1 Ne 2:7)", detail: "After three days’ journey, Lehi builds an altar of stones, makes an offering, and gives thanks to the Lord (1 Nephi 2:6–7). Sacred moments did not stop the hardship that followed." },
+  { id: "l-sons", person: "lehi", year: 15, type: "heartache", label: "His sons murmur (1 Ne 2:11–13)", labelDy: 34, detail: "Laman and Lemuel murmur against their father, calling him a visionary man; Lehi speaks to them with power until they are confounded (1 Nephi 2:11–14)." },
+  { id: "l-comfort", person: "lehi", year: 19, type: "moment", label: "Comforts Sariah (1 Ne 5:4–6)", labelDy: 34, detail: "When Sariah fears her sons have perished and complains against him, Lehi answers with his own witness and comforts her (1 Nephi 5:2–6)." },
+  { id: "l-offering", person: "lehi", year: 22, type: "altar", label: "Offerings and thanks (1 Ne 5:9)", detail: "When the sons return with the plates, the family rejoices and offers sacrifice and burnt offerings, giving thanks to the God of Israel (1 Nephi 5:7–9)." },
+  { id: "l-dream", person: "lehi", year: 27, type: "revelation", label: "Lehi’s dream (1 Ne 8)", detail: "In the valley of Lemuel Lehi dreams of the tree of life (1 Nephi 8). Scene 10 opens this dream in detail." },
+  { id: "l-fear", person: "lehi", year: 29.5, type: "heartache", label: "Fears for Laman and Lemuel (1 Ne 8:36–37)", labelDy: 34, detail: "Lehi fears exceedingly for Laman and Lemuel and exhorts them with all the feeling of a tender parent (1 Nephi 8:36–37)." },
+  { id: "l-liahona", person: "lehi", year: 34, type: "revelation", label: "The Liahona (1 Ne 16:10)", labelDy: 34, detail: "Lehi finds a round ball of curious workmanship at his tent door; one spindle points the way they should go (1 Nephi 16:9–10)." },
+  { id: "l-hunger", person: "lehi", year: 40, type: "want", label: "Hunger — Lehi murmurs too (16:20)", detail: "With the bows lost or broken, the family cannot get food. Laman, Lemuel, and the sons of Ishmael murmur exceedingly, and Lehi also begins to murmur against the Lord (1 Nephi 16:18–20)." },
+  { id: "l-inquires", person: "lehi", year: 43, type: "revelation", label: "Inquires; chastened, he is humbled (16:24–25)", labelDy: 34, detail: "Nephi asks his father where to go for food. After the family humbles itself because of Nephi’s words, Lehi inquires of the Lord (16:24); the Lord chastens him and he is brought low with sorrow. Then he is told to look upon the ball (1 Nephi 16:23–26)." },
+  { id: "l-jacob", person: "lehi", year: 50, type: "child", label: "Jacob born (1 Ne 18:7)", detail: "Lehi and Sariah have two sons born in the wilderness: Jacob, then Joseph (1 Nephi 18:7)." },
+  { id: "l-joseph", person: "lehi", year: 56, type: "child", label: "Joseph born (1 Ne 18:7)", labelDy: 34, detail: "Joseph is the younger of the two sons born in the wilderness (1 Nephi 18:7; 2 Nephi 3:1)." },
+  { id: "l-grief", person: "lehi", year: 74, type: "want", label: "Sick with grief on the sea (1 Ne 18:17–18)", detail: "When his sons bind Nephi on the ship, Lehi and Sariah, well along in years, are brought down to sick-beds with grief, near to being cast into the sea (1 Nephi 18:17–18)." },
+  { id: "l-blesses", person: "lehi", year: 86, type: "blessing", label: "Pleads and blesses (2 Ne 1–4)", detail: "Near the end of his life Lehi pleads with his sons and blesses his household: his sons, their children, Zoram, and the household of Ishmael (2 Nephi 1–4:12)." },
+  { id: "l-death", person: "lehi", year: 90, type: "death", label: "Lehi dies (2 Ne 4:12)", labelDy: 34, detail: "After he has spoken to all his household, Lehi grows old, dies, and is buried (2 Nephi 4:12)." },
+
+  // --- Sariah ---
+  { id: "s-wife", person: "sariah", year: 0.6, type: "spouse", label: "Lehi’s wife (1 Ne 2:5)", labelDy: 34, detail: "Sariah walks her own line beside Lehi’s. Two lines travel together; neither is absorbed (1 Nephi 2:5)." },
+  { id: "s-fear", person: "sariah", year: 18, type: "heartache", label: "Fears for her sons (1 Ne 5:1–3)", detail: "While her sons are away getting the plates, Sariah supposes they have perished in the wilderness, mourns, and complains against Lehi (1 Nephi 5:1–3)." },
+  { id: "s-witness", person: "sariah", year: 21, type: "revelation", label: "Her own witness (1 Ne 5:8)", labelDy: 34, detail: "When her sons return, Sariah says she now knows of a surety that the Lord commanded her husband and protected her sons (1 Nephi 5:7–8). Mothers receive revelation too." },
+  { id: "s-offering", person: "sariah", year: 23.5, type: "altar", label: "Offerings and thanks (1 Ne 5:9)", detail: "The family offers sacrifice and burnt offerings and gives thanks together (1 Nephi 5:9)." },
+  { id: "s-hunger", person: "sariah", year: 40, type: "want", label: "Suffers for want of food (16:19)", detail: "Fatigued from the journey, the family suffers much for want of food (1 Nephi 16:19). Mothers carried this too." },
+  { id: "s-jacob", person: "sariah", year: 50, type: "child", label: "Jacob born in the wilderness (1 Ne 18:7)", detail: "Sariah bears Jacob in the wilderness, years into the journey (1 Nephi 18:7)." },
+  { id: "s-joseph", person: "sariah", year: 56, type: "child", label: "Joseph born (1 Ne 18:7)", labelDy: 34, detail: "Sariah bears Joseph, the younger son born in the wilderness (1 Nephi 18:7)." },
+  { id: "s-grief", person: "sariah", year: 74, type: "want", label: "Sick with grief (1 Ne 18:17–19)", detail: "Sariah and Lehi are brought down to sick-beds with grief when Nephi is bound; Jacob and Joseph grieve because of their mother’s afflictions (1 Nephi 18:17–19)." },
+
+  // --- Laman ---
+  { id: "la-murmur", person: "laman", year: 14, type: "heartache", label: "Murmurs against his father (1 Ne 2:11–12)", labelDy: 34, detail: "Laman and Lemuel murmur because they do not know the dealings of the God who created them (1 Nephi 2:11–12). A pattern, not a destiny." },
+  { id: "la-wife", person: "laman", year: 31, type: "spouse", label: "Marries a daughter of Ishmael (1 Ne 16:7)", detail: "Lehi’s sons and Zoram marry daughters of Ishmael (1 Nephi 16:7)." },
+  { id: "la-hunger", person: "laman", year: 40, type: "want", label: "Hungry, he murmurs exceedingly (16:20)", detail: "In the hunger after the bow breaks, Laman and Lemuel and the sons of Ishmael murmur exceedingly because of their sufferings and afflictions (1 Nephi 16:18–20). One moment, seen alone, is easy to judge." },
+  { id: "la-children", person: "laman", year: 84, type: "grandchild", label: "Lehi blesses Laman’s children (2 Ne 4:3–7)", detail: "Lehi blesses the children of Laman: if they are cursed, the cursing may be on their parents’ heads; the Lord will not suffer them to perish and will be merciful to their seed (2 Nephi 4:3–7)." },
+  { id: "la-offered", person: "laman", year: 87, type: "blessing", label: "Blessing offered, not forced (2 Ne 1:28–29)", labelDy: 34, detail: "Lehi offers his sons his first blessing if they will hearken; if not, he takes it away and it rests on Nephi (2 Nephi 1:28–29). They keep their agency." },
+  { id: "la-father", person: "laman", year: 90, type: "death", label: "Father dies (2 Ne 4:12)", detail: "Lehi dies (2 Nephi 4:12). Not many days after, Laman and Lemuel are angry with Nephi again (2 Nephi 4:13)." },
+
+  // --- Lemuel ---
+  { id: "le-murmur", person: "lemuel", year: 14, type: "heartache", label: "Murmurs too (1 Ne 2:12)", labelDy: 34, detail: "Lemuel joins Laman in murmuring against their father (1 Nephi 2:11–12). Lehi also speaks to Lemuel alone about steadfastness (2:10)." },
+  { id: "le-wife", person: "lemuel", year: 31, type: "spouse", label: "Marries a daughter of Ishmael (1 Ne 16:7)", detail: "Lemuel marries a daughter of Ishmael (1 Nephi 16:7)." },
+  { id: "le-hunger", person: "lemuel", year: 40, type: "want", label: "Murmurs exceedingly (16:20)", detail: "Lemuel murmurs exceedingly with Laman and the sons of Ishmael (1 Nephi 16:20)." },
+  { id: "le-children", person: "lemuel", year: 84, type: "grandchild", label: "Lehi blesses Lemuel’s children (2 Ne 4:8–9)", detail: "Lehi gives the children of Lemuel the same blessing he gave Laman’s children (2 Nephi 4:8–9)." },
+  { id: "le-offered", person: "lemuel", year: 87, type: "blessing", label: "Pleaded with, not forced (2 Ne 1:13–23)", labelDy: 34, detail: "Lehi pleads with his sons to awake and arise from the dust (2 Nephi 1:13–23). Lemuel keeps his agency." },
+  { id: "le-father", person: "lemuel", year: 90, type: "death", label: "Father dies (2 Ne 4:12)", detail: "Lehi dies (2 Nephi 4:12)." },
+
+  // --- Sam ---
+  { id: "sa-believes", person: "sam", year: 15, type: "revelation", label: "Believes Nephi (1 Ne 2:17)", labelDy: 34, detail: "Nephi speaks to Sam about what the Lord has shown him, and Sam believes his words (1 Nephi 2:17)." },
+  { id: "sa-rod", person: "sam", year: 17.5, type: "harm", label: "Struck with a rod (1 Ne 3:28–29)", detail: "Laman and Lemuel beat Sam and Nephi with a rod until an angel stops them (1 Nephi 3:28–29). The ones harmed were not at fault." },
+  { id: "sa-wife", person: "sam", year: 31, type: "spouse", label: "Marries a daughter of Ishmael (1 Ne 16:7)", detail: "Sam marries a daughter of Ishmael (1 Nephi 16:7)." },
+  { id: "sa-hunger", person: "sam", year: 40, type: "want", label: "Hungry too (16:19)", detail: "Sam shares the family’s want of food (1 Nephi 16:19). His own reaction is not described separately — don’t fill in what the record does not say." },
+  { id: "sa-blessed", person: "sam", year: 86, type: "blessing", label: "Blessed with his seed (2 Ne 4:11)", detail: "Lehi blesses Sam: his seed will be numbered with Nephi’s, and he will be blessed in all his days (2 Nephi 4:11)." },
+  { id: "sa-father", person: "sam", year: 90, type: "death", label: "Father dies (2 Ne 4:12)", detail: "Lehi dies (2 Nephi 4:12)." },
+
+  // --- Nephi ---
+  { id: "n-softened", person: "nephi", year: 15, type: "revelation", label: "Heart softened (1 Ne 2:16)", detail: "Nephi cries to the Lord, and the Lord softens his heart so that he believes his father’s words (1 Nephi 2:16)." },
+  { id: "n-rod", person: "nephi", year: 17.5, type: "harm", label: "Beaten along with Sam (1 Ne 3:28–29)", labelDy: 42, detail: "Nephi and Sam are beaten with a rod by their older brothers until an angel intervenes (1 Nephi 3:28–29). The ones harmed were not at fault." },
+  { id: "n-bound", person: "nephi", year: 20.5, type: "harm", label: "Bound with cords (1 Ne 7:16)", detail: "On the way back with Ishmael’s family, Nephi’s brothers bind him with cords, meaning to leave him to die. He is freed; one of Ishmael’s daughters, her mother, and a son plead for him (1 Nephi 7:16–19)." },
+  { id: "n-vision", person: "nephi", year: 28, type: "revelation", label: "Sees his father’s vision (1 Ne 11)", labelDy: 34, detail: "Nephi desires to see what his father saw, and is shown the tree, the rod, and the love of God (1 Nephi 10:17; 11:1–25)." },
+  { id: "n-wife", person: "nephi", year: 31, type: "spouse", label: "Marries a daughter of Ishmael (1 Ne 16:7)", detail: "Nephi marries a daughter of Ishmael (1 Nephi 16:7)." },
+  { id: "n-bow", person: "nephi", year: 38, type: "want", label: "His bow breaks; no food (16:18)", detail: "Nephi’s fine steel bow breaks and his brothers’ bows have lost their springs, so they cannot get food (1 Nephi 16:18, 21)." },
+  { id: "n-newbow", person: "nephi", year: 41, type: "moment", label: "Makes a bow; asks his father (16:23)", labelDy: 34, detail: "Nephi makes a bow and an arrow out of wood, and asks his father where he should go to get food (1 Nephi 16:23). He goes to his father first." },
+  { id: "n-food", person: "nephi", year: 45, type: "moment", label: "Food from the mountain (16:30–32)", detail: "Following the directions on the ball, Nephi goes up to the top of the mountain and finds food; the family humbles itself and gives thanks (1 Nephi 16:30–32)." },
+  { id: "n-ship", person: "nephi", year: 72, type: "harm", label: "Bound on the ship (1 Ne 18:11–15)", labelAnchor: "end", detail: "On the sea, Laman and Lemuel bind Nephi for four days. The compass stops working until they loose him (1 Nephi 18:11–15). The one harmed was not at fault." },
+  { id: "n-father", person: "nephi", year: 90, type: "death", label: "Father dies (2 Ne 4:12)", labelDy: 34, detail: "Lehi dies (2 Nephi 4:12). Nephi writes his grief and trust soon after (2 Nephi 4:15–35)." },
+  { id: "n-separate", person: "nephi", year: 94, type: "moment", label: "Flees with those who will go (2 Ne 5:5–6)", detail: "Warned by the Lord, Nephi departs into the wilderness with all who will go with him (2 Nephi 5:5–9)." },
+  { id: "n-temple", person: "nephi", year: 96.5, type: "temple", label: "Builds a temple (2 Ne 5:16)", labelDy: 34, labelAnchor: "end", detail: "Nephi builds a temple after the manner of Solomon’s (2 Nephi 5:16)." },
+
+  // --- Jacob and Joseph (born in the wilderness) ---
+  { id: "j-grief", person: "jacob", year: 74, type: "heartache", label: "Grieves for his mother (1 Ne 18:19)", detail: "Jacob, still young, grieves because of his mother’s afflictions (1 Nephi 18:19)." },
+  { id: "j-blessing", person: "jacob", year: 87, type: "blessing", label: "His father’s blessing (2 Ne 2)", labelDy: 34, detail: "Lehi speaks to Jacob, his firstborn in the wilderness: he has known afflictions, and God will consecrate them for his gain (2 Nephi 2:1–2)." },
+  { id: "j-consecrated", person: "jacob", year: 97, type: "consecration", label: "Consecrated priest and teacher (2 Ne 5:26)", labelAnchor: "end", detail: "Nephi consecrates Jacob and Joseph to be priests and teachers over the land of his people (2 Nephi 5:26)." },
+  { id: "jo-grief", person: "joseph", year: 74, type: "heartache", label: "Grieves for his mother (1 Ne 18:19)", labelDy: 34, detail: "Joseph grieves with Jacob over their mother’s afflictions (1 Nephi 18:19)." },
+  { id: "jo-blessing", person: "joseph", year: 88, type: "blessing", label: "His father’s blessing (2 Ne 3)", detail: "Lehi speaks to Joseph, his last-born, born in the wilderness of his afflictions (2 Nephi 3:1–3)." },
+  { id: "jo-consecrated", person: "joseph", year: 97, type: "consecration", label: "Consecrated to serve (2 Ne 5:26)", labelDy: 34, labelAnchor: "end", detail: "Joseph is consecrated with Jacob as a priest and teacher (2 Nephi 5:26)." },
+
+  // --- Nephi's sisters (named only as a group, 2 Ne 5:6) ---
+  { id: "si-go", person: "sisters", year: 94, type: "moment", label: "Go with Nephi (2 Ne 5:6)", labelAnchor: "end", labelDy: 46, detail: "Nephi’s sisters are named among those who go with him (2 Nephi 5:6). Their births are not recorded, so the line begins where the record mentions them." },
+
+  // --- Ishmael's household ---
+  { id: "i-join", person: "ishmael", year: 20, type: "moment", label: "Joins the journey (1 Ne 7:2–5)", labelDy: 46, detail: "Lehi’s sons return to Jerusalem; Ishmael and his household come into the wilderness with them (1 Nephi 7:2–5). A daughter, her mother, and a son plead for Nephi when he is bound (7:19)." },
+  { id: "i-offering", person: "ishmael", year: 22.5, type: "altar", label: "Offerings (1 Ne 7:22)", detail: "Arriving at Lehi’s tent, they give thanks and offer sacrifice and burnt offerings (1 Nephi 7:22)." },
+  { id: "i-wives", person: "ishmael", year: 31, type: "spouse", label: "Daughters marry (1 Ne 16:7)", detail: "Ishmael’s daughters marry Lehi’s sons and Zoram (1 Nephi 16:7)." },
+  { id: "i-hunger", person: "ishmael", year: 40, type: "want", label: "Sons of Ishmael murmur (16:20)", labelDy: 34, detail: "The sons of Ishmael murmur exceedingly in the hunger (1 Nephi 16:20)." },
+  { id: "i-death", person: "ishmael", year: 47, type: "death", label: "Ishmael dies at Nahom (16:34)", detail: "Ishmael dies and is buried at Nahom (1 Nephi 16:34)." },
+  { id: "i-mourn", person: "ishmael", year: 49, type: "heartache", label: "His daughters mourn (16:35)", labelDy: 34, detail: "Ishmael’s daughters mourn exceedingly for their father and because of their afflictions in the wilderness (1 Nephi 16:35)." },
+  { id: "i-blessed", person: "ishmael", year: 86, type: "blessing", label: "Lehi speaks to them (2 Ne 4:10)", detail: "Lehi speaks to the sons of Ishmael and all his household (2 Nephi 4:10)." },
+
+  // --- Lehi's dream (scriptural pattern; layer "lehi") ---
+  { id: "lehi-partakes", person: null, year: 0, x: 2050, y: 2040, type: "vision", layer: "lehi", label: "Lehi partakes, then wants his family to come (8:10–13)", labelDx: 30, labelDy: -30, explorePad: [620, 260], detail: "In the dream Lehi tastes the fruit of the tree, finds it filled his soul with joy, and at once desires that his family partake too (1 Nephi 8:10–13)." },
+  { id: "lehi-family-come", person: null, year: 0, x: 2560, y: 2300, type: "vision", layer: "lehi", label: "Sariah, Sam, and Nephi come and partake (8:14–16)", labelDx: 30, labelDy: -40, explorePad: [620, 260], detail: "Sariah, Sam, and Nephi come and partake of the fruit (1 Nephi 8:14–16). Continuing still matters: some who tasted the fruit later turned away (8:28)." },
+  { id: "lehi-would-not", person: null, year: 0, x: 2330, y: 2545, type: "vision", layer: "lehi", label: "Would not come (8:17–18)", labelDx: -500, labelDy: 12, explorePad: [620, 260], detail: "Laman and Lemuel would not come (1 Nephi 8:17–18). Their lines are drawn as possible paths, not finished ones. Agency stays open." },
+  { id: "lehi-pleads", person: null, year: 0, x: 2285, y: 2377, type: "vision", layer: "lehi", label: "Lehi keeps pleading (8:36–37)", labelDx: -640, labelDy: 12, explorePad: [620, 260], detail: "Lehi fears for them and exhorts them with all the feeling of a tender parent (1 Nephi 8:36–37). His love keeps reaching toward sons who said no." }
+];
+
+/* Kept for compatibility; v1.8 draws no invented "ordinary life" marks. */
+const ORDINARY = [];
+
+/* Possible branches from the hunger moment on Lehi's line (teaching device). */
+const BRANCHES = [
+  { id: "murmur", label: "Murmur with them", consequence: "Possible deeper despair", color: "#9a5a3a", via: [[41, -40], [43.5, -80], [46.5, -105]] },
+  { id: "withdraw", label: "Withdraw from the moment", consequence: "Opportunity possibly missed", color: "#7a6f62", via: [[41, 25], [43.5, 40], [46.5, 50]] },
+  { id: "inquire", label: "Humble himself and inquire", consequence: "Possible opening", color: "#2f6a78", via: [[41, 80], [43.5, 130], [46.5, 160]] }
+];
+
+const LEHI = {
+  box: { x: 1110, y: 1830, w: 2880, h: 910 },   // camera frame for the scene
+  startX: 1250,                                  // where each lane begins
+  dreamX: 2050,                                  // the dream moment (1 Ne 8)
+  endOpenX: 2330,                                // Laman/Lemuel lanes pause here
+  people: [
+    { id: "lehi",   name: "Lehi",   color: PEOPLE.lehi.color,   y: 2040, toward: "tree" },
+    { id: "sariah", name: "Sariah", color: PEOPLE.sariah.color, y: 2130, toward: "tree" },
+    { id: "nephi",  name: "Nephi",  color: PEOPLE.nephi.color,  y: 2220, toward: "tree" },
+    { id: "sam",    name: "Sam",    color: PEOPLE.sam.color,    y: 2310, toward: "tree" },
+    { id: "laman",  name: "Laman",  color: PEOPLE.laman.color,  y: 2500, toward: "open" },
+    { id: "lemuel", name: "Lemuel", color: PEOPLE.lemuel.color, y: 2590, toward: "open" }
+  ],
+  rod: { x0: 2440, x1: 3420, y: 2322 },          // iron rod along the river bank
+  river: { x0: 2720, x1: 3975, y: 2412 },        // river of water (8:13)
+  tree: { x: 3650, y: 2060 },                    // canopy centre
+  building: { x: 3585, y: 2478, w: 230, h: 185 } // floats "as it were in the air" (8:26)
+};
+
+/* Notes drawn in the world. kind "action" = bold banner. All scale to stay readable. */
+const ANNOTATIONS = [
+  { id: "christ-note", layer: "christ-note", x: xYear(18), y: 140, anchor: "middle", lines: ["Sacred moments connect us to Christ —", "they do not erase hardship."] },
+  { id: "pattern-note", layer: "pattern", x: xYear(14.5), y: 650, text: "a pattern of murmuring — not a destiny (1 Ne 2:12; 3:5; 16:20)" },
+  { id: "lehi-knows", layer: "wider-notes", x: xYear(9), y: 160, lines: ["Lehi knows much of their story —", "and in the hunger he murmurs too (16:20)."] },
+  { id: "nephi-asks", layer: "next-step", x: xYear(41.6), y: 640, text: "Nephi comes to his father (16:23)" },
+  { id: "lehi-asks", layer: "next-step", x: xYear(43.3), y: 150, text: "Lehi inquires of the Lord (16:24)" },
+  { id: "next-step", layer: "next-step", x: xYear(43.6), y: 470, text: "Look to the Lord; take the next step shown.", kind: "action" },
+  { id: "liahona-note", layer: "next-step", x: xYear(43.6), y: 510, text: "It worked by faith and diligence and changed from time to time (16:28–29)." },
+  { id: "plead-note", layer: "agency", x: xYear(84.6), y: 165, text: "“Awake, my sons” (2 Ne 1:23)" },
+  { id: "agency-note", layer: "agency", x: xYear(80.6), y: 760, lines: ["They keep their agency. Love does not force;", "it keeps reaching (2 Ne 1:28–29)."] },
+  { id: "anger-note", layer: "agency", x: xYear(80.6), y: 830, text: "Hardship continues: anger rises again after Lehi dies (2 Ne 4:13)." },
+  { id: "harm-note", layer: "harm-notes", x: xYear(26), y: 880, text: "Sam and Nephi were not at fault." },
+  { id: "harm-help", layer: "harm-notes", x: xYear(26), y: 920, text: "Today: safety first, protection, reporting where required, and professional help." },
+  { id: "marriage-caption", layer: "marriage", x: xYear(4), y: 305, anchor: "start", text: "Two lives side by side" },
+  { id: "sariah-end", layer: "person-sariah", x: xYear(80.5), y: 388, anchor: "start", text: "her death is not recorded" }
+];
+
+/* Shared camera for the whole-family stops so they stay aligned. */
+const FAMILY_OVERVIEW_VIEW = {
+  years: [0, 100],
+  people: ["lehi", "ishmael"],
+  padLeft: 120,
+  padRight: 140,
+  padY: 120
+};
+
+/* Scene 4 only: extra room below Ishmael’s lane (captions + control bar) and on the right (era label). */
+const FAMILY_INTRO_VIEW = {
+  years: [0, 100],
+  people: ["lehi", "ishmael"],
+  padLeft: 140,
+  padRight: 300,
+  padY: 120,
+  points: [[xYear(0), PEOPLE.ishmael.y + 250]]
+};
+
+const ALL_PEOPLE = Object.keys(PEOPLE);
+const FAMILY_LAYERS = ["axis", "marriage", "births"]
+  .concat(ALL_PEOPLE.map((id) => "person-" + id))
+  .concat(ALL_PEOPLE.map((id) => "events-" + id));
+function lanes(ids) {
+  return ids.map((id) => "person-" + id).concat(ids.map((id) => "events-" + id));
+}
+const HUNGER_PEOPLE = ["lehi", "sariah", "laman", "lemuel", "sam", "nephi"];
+const HUNGER_VIEW = { years: [36, 47], people: ["lehi", "nephi"], padLeft: 160, padRight: 300, padY: 110 };
+
+const SCENES = [
+  {
+    id: "one-life",
+    title: "One Life: Lehi",
+    narration: "Lehi’s line holds more than we see at first glance: a vision and a call, a home left behind, an altar of thanks, sons who murmur, a dream. Every father’s line carries history others may not see.",
+    question: "What might we miss if we only notice the present?",
+    notes: "This follows Lehi’s family from the Book of Mormon. Time is schematic, not to scale; dates are approximate (about 600 BC). Every mark cites its verses — click one to read the reference. Invite the brethren to think of their own families without sharing private details.",
+    view: { years: [0, 31], people: ["lehi"], padX: 150, padY: 170 },
+    show: ["axis"].concat(lanes(["lehi"])),
+    highlight: ["l-vision", "l-altar", "l-sons", "l-dream"],
+    people: ["lehi"]
+  },
+  {
+    id: "how-to-read",
+    title: "How to Read a Life",
+    narration: "Some marks are death, want or hunger, heartache, or harm by another. Shields mark sacred moments — an altar and offerings, a father’s blessings, the temple Nephi built. Sacred moments connect people to Christ. They do not make anyone immune to hardship.",
+    question: "",
+    notes: "Lehi built an altar and gave thanks right after leaving everything behind (1 Ne 2:7) — and the hardship kept coming. The key under Lehi’s line shows every mark; open Legend (L) only if you want the longer descriptions. Optional: Mosiah 18:8–10; Alma 7:11–12.",
+    view: { years: [0, 36], people: ["lehi"], points: [[xYear(0), 110], [xYear(36), 450]], padX: 150, padY: 40 },
+    show: ["axis", "inline-legend", "christ-note"].concat(lanes(["lehi"])),
+    highlight: ["l-altar"],
+    people: ["lehi"]
+  },
+  {
+    id: "sariahs-path",
+    title: "Sariah’s Own Path",
+    narration: "Sariah’s life is her own. While her sons were gone she feared they had perished and complained against Lehi (1 Ne 5:1–3). Lehi comforted her (5:4–6). When they returned she received her own witness that the Lord had commanded her husband (5:8). Mothers receive revelation too.",
+    question: "What changes when we treat a wife as a full partner?",
+    notes: "Gold stars mark marriage: two lines side by side, neither absorbed. Lehi did not dismiss Sariah’s fear; he answered it with his own witness. Her certainty came through her own experience.",
+    view: { years: [0, 30], people: ["lehi", "sariah"], padX: 150, padY: 150 },
+    show: ["axis", "marriage"].concat(lanes(["lehi", "sariah"])),
+    highlight: ["s-wife", "l-comfort", "s-fear", "s-witness"],
+    people: ["lehi", "sariah"]
+  },
+  {
+    id: "family-of-lines",
+    title: "A Family of Lines",
+    narration: "Laman, Lemuel, Sam, and Nephi each walk their own line. Jacob and Joseph are born in the wilderness (1 Ne 18:7). Ishmael’s household joins the journey (1 Ne 7), and Nephi’s sisters are named later (2 Ne 5:6). Parents keep walking their own lines too.",
+    question: "",
+    notes: "Each person owns a line. Stewardship is not ownership of anyone’s agency. The eras along the top are approximate: about eight years in the wilderness in all (1 Ne 17:4), and about thirty years from leaving Jerusalem to the separation (2 Ne 5:28). Sariah’s line fades because her death is not recorded. Zoram is part of the story but is not drawn as a separate line.",
+    view: FAMILY_INTRO_VIEW,
+    show: FAMILY_LAYERS,
+    highlight: ["s-jacob", "s-joseph", "i-join", "si-go"],
+    people: ALL_PEOPLE
+  },
+  {
+    id: "one-hunger",
+    title: "One Hunger, Many Experiences",
+    narration: "Nephi’s bow breaks and there is no food (1 Ne 16:18). The family suffers for want of food (16:19). Laman, Lemuel, and the sons of Ishmael murmur exceedingly — and Lehi murmurs too (16:20). Nephi makes a new bow and asks his father where to go (16:23).",
+    question: "Who else is carrying this, and how?",
+    notes: "One hardship lands differently on each line. Sam’s reaction is not described separately — don’t fill in what the record doesn’t say. Hunger and fatigue are real; they explain the murmuring without excusing it.",
+    view: HUNGER_VIEW,
+    show: ["axis", "marriage"].concat(lanes(HUNGER_PEOPLE)),
+    highlight: ["l-hunger", "s-hunger", "la-hunger", "le-hunger", "sa-hunger", "n-newbow"],
+    people: HUNGER_PEOPLE
+  },
+  {
+    id: "single-moment",
+    title: "Murmuring at the Broken Bow",
+    narration: "Here is one moment on Laman’s line: hungry and worn out, he murmurs exceedingly against the Lord (1 Ne 16:20). By itself, it is easy to judge.",
+    question: "What do we see — if this is all we see?",
+    notes: "Pause. Let the brethren sit with the isolated moment before widening the view.",
+    view: { years: [39.2, 40.8], people: ["laman"], padX: 120, padY: 120 },
+    show: ["axis"].concat(lanes(["laman"])),
+    highlight: ["la-hunger"],
+    people: ["laman"]
+  },
+  {
+    id: "wider-picture",
+    title: "The Wider Picture",
+    narration: "Around that moment: a home and riches left behind (1 Ne 2:4), years of hard travel, hunger and fatigue (16:19), a long pattern of murmuring (2:12; 3:5). And Lehi, who knows their story, murmured too (16:20). A father sees a great deal. He does not see everything.",
+    question: "What can a father see? What might he still not see?",
+    notes: "Context is not an excuse, and a pattern is not a destiny. Sariah sees things Lehi may miss; each son knows things neither parent sees; the Lord knows the whole person.",
+    view: { years: [8, 44], people: ["lehi", "lemuel"], padLeft: 180, padRight: 640, padY: 140 },
+    show: ["axis", "marriage", "pattern", "wider-notes"].concat(lanes(["lehi", "sariah", "laman", "lemuel"])),
+    highlight: ["l-leave", "la-murmur", "l-hunger", "la-hunger"],
+    people: ["lehi", "sariah", "laman", "lemuel"]
+  },
+  {
+    id: "three-questions",
+    title: "Ask Before You Act",
+    narration: "Nephi does not go around his father: he makes a bow and asks him where to go for food (1 Ne 16:23). After the family humbles itself because of Nephi’s words, Lehi inquires of the Lord (16:24); then he is chastened (16:25).",
+    question: "What have I noticed? What am I missing? How would Thou have me help?",
+    notes: "Optional: Doctrine and Covenants 121:41–46. This is not a promise that revelation arrives on demand or that any approach guarantees an outcome.",
+    view: HUNGER_VIEW,
+    show: ["axis", "marriage"].concat(lanes(HUNGER_PEOPLE)),
+    highlight: ["n-newbow", "l-inquires"],
+    people: HUNGER_PEOPLE
+  },
+  {
+    id: "three-paths",
+    title: "Three Possible Paths",
+    narration: "In the hunger, a father could murmur along, withdraw, or humble himself and inquire. These faint lines are possible consequences — not predictions. None is finished; none is guaranteed. Lehi did inquire of the Lord (16:24), and was chastened and humbled (16:25).",
+    question: "Which pattern do I reach for when I am tired and worried?",
+    notes: "The branches are a teaching device, not scripture. Keep them visually separate from Lehi’s actual line. Next, the camera visits Lehi’s earlier dream, where he had already seen where paths can lead.",
+    view: { years: [38.5, 46.5], people: ["lehi"], padLeft: 170, padRight: 420, padY: 40, points: [[xYear(40), 60], [xYear(40), 500]] },
+    show: ["axis", "person-lehi", "branches"],
+    highlight: [],
+    people: ["lehi"]
+  },
+  {
+    id: "lehis-family",
+    title: "Lehi’s Family: Two Destinations",
+    narration: "Years before, in the valley of Lemuel, Lehi dreamed of the tree of life (1 Ne 8). Sariah, Sam, and Nephi came and partook of the fruit. Laman and Lemuel would not come. Lehi kept pleading with them in love. The lines lead toward the tree or toward the great and spacious building — possible paths, not fixed destinies.",
+    question: "Where are the paths in my home pointing — and how do I keep reaching in love?",
+    notes: "Read the verses from the scriptures if you quote them: 1 Nephi 8:10–18, 26–28, 36–37; 1 Nephi 11:21–25, 35–36. Dashed lines are possibilities, not outcomes. Some who partook later turned away (8:28), and Lehi kept teaching sons who had declined (8:36–37). Jacob and Joseph were not yet born. Do not suggest that any real person is ‘in the building.’ Click a marker to look closer.",
+    view: { box: LEHI.box },
+    show: ["lehi"],
+    highlight: ["lehi-partakes", "lehi-family-come", "lehi-would-not", "lehi-pleads"],
+    people: [],
+    noYears: true
+  },
+  {
+    id: "next-step",
+    title: "Inquire, Then Take the Next Step",
+    narration: "The Lord chastens Lehi and he is brought low (1 Ne 16:25); then he is told to look upon the ball (16:26). Its pointers worked by faith and diligence, and its writing changed from time to time (16:28–29). Nephi climbs the mountain as directed and finds food (16:30–31). Not a full map — a next step.",
+    question: "",
+    action: "Inquire. Then take the next step shown.",
+    notes: "By small means the Lord can bring about great things (16:29). Revelation is often a next faithful step, not foresight of everything ahead. Notice the order: Nephi went to his father; Lehi went to the Lord; the family humbled itself and gave thanks (16:32).",
+    view: { years: [38, 47], people: ["lehi", "nephi"], padLeft: 180, padRight: 640, padY: 140 },
+    show: ["axis", "marriage", "next-step"].concat(lanes(["lehi", "sariah", "nephi"])),
+    highlight: ["n-newbow", "l-inquires", "n-food"],
+    people: ["lehi", "sariah", "nephi"]
+  },
+  {
+    id: "love-without-control",
+    title: "Love Without Control",
+    narration: "In the promised land Lehi pleads with his sons and offers them his blessing (2 Ne 1:13–29). He blesses Laman’s and Lemuel’s children (2 Ne 4:3–9), and Sam with his seed (4:11). Laman and Lemuel keep their agency. Love does not force; it keeps reaching.",
+    question: "What does love look like when someone says not yet?",
+    notes: "Blessings are offered, not forced (2 Ne 1:28–29). Lehi’s love outlasts their refusals — and hardship does not end when he dies (2 Ne 4:13).",
+    view: { years: [80, 92], people: ["lehi", "sam"], points: [[xYear(80), 120], [xYear(92), 860]], padLeft: 130, padRight: 520, padY: 20 },
+    show: ["axis", "agency"].concat(lanes(["lehi", "laman", "lemuel", "sam"])),
+    highlight: ["l-blesses", "la-children", "le-children", "sa-blessed", "l-death"],
+    people: ["lehi", "laman", "lemuel", "sam"]
+  },
+  {
+    id: "when-harm",
+    title: "When Harm Is Present",
+    narration: "Some marks are harm inflicted by another. Laman and Lemuel struck Sam and Nephi with a rod (1 Ne 3:28–29), bound Nephi in the wilderness (7:16), and bound him on the ship (18:11–15). The person harmed is not at fault.",
+    question: "",
+    notes: "Be brief and steady. Do not invite disclosure in the room or dramatize. In families today: safety first, protection, reporting where required, and professional help; point privately to the bishop afterward. When Nephi was bound in the wilderness, one of Ishmael’s daughters, her mother, and a son pleaded for him and softened his brothers’ hearts (1 Ne 7:19) — standing up for someone matters. On the ship, his wife’s and children’s tears and prayers did not soften his brothers; only the power of God freed him (1 Ne 18:19–20).",
+    view: { years: [14, 76], people: ["sam", "nephi"], padX: 150, padY: 180 },
+    show: ["axis", "harm-notes"].concat(lanes(["sam", "nephi"])),
+    highlight: ["sa-rod", "n-rod", "n-bound", "n-ship"],
+    people: ["sam", "nephi"]
+  },
+  {
+    id: "fathers-trust",
+    title: "A Father’s Trust",
+    narration: "The whole family again: opportunity, blessing, and responsibility. Lehi led by serving, pleading, and blessing — not by control. A father presiding in his home is not the ordained office of a stake patriarch, and not above his wife; Sariah was a full partner with her own witness. The same truths apply to our families today, whatever they look like.",
+    question: "",
+    notes: "Respect different family situations — single parents, blended families, empty chairs, children not in the home. Opportunity, blessing, and responsibility, without comparison or ranking. Covenants and blessings connect people to Christ; they did not spare this family hardship.",
+    view: FAMILY_OVERVIEW_VIEW,
+    show: FAMILY_LAYERS,
+    highlight: [],
+    people: ALL_PEOPLE
+  },
+  {
+    id: "gen-family",
+    title: "Lehi’s family",
+    narration: "Their lines go on: children and grandchildren fill in beneath them.",
+    question: "",
+    notes: "Let the new rows draw in before speaking. Each row is one life, drawn the same way as the family’s lines. The picture is schematic, not a genealogy or population data.",
+    view: { box: { x: 100, y: 100, w: 6300, h: 1720 } },
+    show: FAMILY_LAYERS.concat(["gen-0"]),
+    grow: [0],
+    highlight: [],
+    people: [],
+    noYears: true
+  },
+  {
+    id: "gen-children",
+    title: "Their children’s children",
+    narration: "Lehi blessed his children’s children (2 Ne 4:3–9). Hundreds more lives appear.",
+    question: "",
+    notes: "Lehi blessed Laman’s and Lemuel’s children that the Lord would be merciful to them and their seed (2 Ne 4:7, 9). Each generation still chooses for itself.",
+    view: { box: { x: 100, y: 100, w: 11100, h: 3720 } },
+    show: FAMILY_LAYERS.concat(["gen-0", "gen-1"]),
+    grow: [1],
+    highlight: [],
+    people: [],
+    noYears: true
+  },
+  {
+    id: "gen-many",
+    title: "Many generations",
+    narration: "Each line is a life. Look how many.",
+    question: "",
+    notes: "Pause here. Optional question: What will my blessings and choices carry forward — and what will my children still choose? The field is schematic; line counts are illustrative.",
+    view: { box: { x: 100, y: 100, w: 18500, h: 6800 } },
+    show: FAMILY_LAYERS.concat(["gen-0", "gen-1", "gen-2"]),
+    grow: [2],
+    highlight: [],
+    people: [],
+    noYears: true
+  },
+  {
+    id: "who-needs-you",
+    title: "Who Needs Your Attention?",
+    narration: "Somewhere on a real line in your family, someone may need you.",
+    question: "Who needs your attention? Ask the Lord. Counsel together. Act in love.",
+    notes: "Close with quiet. Leave time. Thank them. The illustration is not a promise that every prayer yields a clear plan or a changed outcome.",
+    view: FAMILY_OVERVIEW_VIEW,
+    show: FAMILY_LAYERS,
+    highlight: [],
+    people: ALL_PEOPLE
+  }
+];
+
+/* =============================================================================
+   APP ENGINE
+   Generally no need to edit below unless you are changing interaction itself.
+   ============================================================================= */
+
+const NS = "http://www.w3.org/2000/svg";
+
+const state = {
+  scene: 0,
+  explore: null,
+  legend: false,
+  notes: false,
+  help: false,
+  index: false,
+  legendAuto: false,
+  reducedOverride: null,
+  camera: { x: 0, y: 0, w: WORLD.width, h: WORLD.height }
+};
+
+let cameraAnim = null;
+let svg, els;
+
+function $(id) { return document.getElementById(id); }
+
+function prefersReduced() {
+  if (state.reducedOverride !== null) return state.reducedOverride;
+  return !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+}
+
+function clamp(n, a, b) { return Math.max(a, Math.min(b, n)); }
+
+function easeInOutSine(t) {
+  return -(Math.cos(Math.PI * t) - 1) / 2;
+}
+
+function eventPoint(ev) {
+  const p = ev.person ? PEOPLE[ev.person] : null;
+  return {
+    x: (typeof ev.x === "number" ? ev.x : xYear(ev.year)) + (ev.dx || 0),
+    y: (p ? p.y : ev.y) + (ev.dy || 0)
+  };
+}
+
+function svgEl(name, attrs, parent) {
+  const node = document.createElementNS(NS, name);
+  if (attrs) {
+    Object.keys(attrs).forEach((key) => {
+      if (attrs[key] !== undefined && attrs[key] !== null) {
+        node.setAttribute(key, String(attrs[key]));
+      }
+    });
+  }
+  if (parent) parent.appendChild(node);
+  return node;
+}
+
+function starPath(r) {
+  const pts = [];
+  for (let i = 0; i < 10; i++) {
+    const a = -Math.PI / 2 + i * Math.PI / 5;
+    const rad = i % 2 === 0 ? r : r * 0.4;
+    pts.push([Math.cos(a) * rad, Math.sin(a) * rad]);
+  }
+  return pts.map((p, i) => (i ? "L" : "M") + p[0].toFixed(2) + "," + p[1].toFixed(2)).join(" ") + "Z";
+}
+
+function heartPath(s) {
+  return "M0," + (s * 0.55).toFixed(2) +
+    " C0," + (s * 0.22).toFixed(2) + " " + (-s * 0.95).toFixed(2) + "," + (-s * 0.05).toFixed(2) + " " + (-s * 0.95).toFixed(2) + "," + (-s * 0.48).toFixed(2) +
+    " C" + (-s * 0.95).toFixed(2) + "," + (-s * 0.82).toFixed(2) + " " + (-s * 0.52).toFixed(2) + "," + (-s * 1.02).toFixed(2) + " " + (-s * 0.18).toFixed(2) + "," + (-s * 0.78).toFixed(2) +
+    " C0," + (-s * 0.95).toFixed(2) + " 0," + (-s * 0.55).toFixed(2) + " 0," + (-s * 0.42).toFixed(2) +
+    " C0," + (-s * 0.55).toFixed(2) + " 0," + (-s * 0.95).toFixed(2) + " " + (s * 0.18).toFixed(2) + "," + (-s * 0.78).toFixed(2) +
+    " C" + (s * 0.52).toFixed(2) + "," + (-s * 1.02).toFixed(2) + " " + (s * 0.95).toFixed(2) + "," + (-s * 0.82).toFixed(2) + " " + (s * 0.95).toFixed(2) + "," + (-s * 0.48).toFixed(2) +
+    " C" + (s * 0.95).toFixed(2) + "," + (-s * 0.05).toFixed(2) + " 0," + (s * 0.22).toFixed(2) + " 0," + (s * 0.55).toFixed(2) + "Z";
+}
+
+function shieldPath() {
+  return "M0,-16 L12,-11 L12,3 C12,11 0,16 0,16 C0,16 -12,11 -12,3 L-12,-11 Z";
+}
+
+function durationFor(from, to) {
+  const dx = (from.x + from.w / 2) - (to.x + to.w / 2);
+  const dy = (from.y + from.h / 2) - (to.y + to.h / 2);
+  const dw = Math.abs(from.w - to.w) + Math.abs(from.h - to.h);
+  const dist = Math.hypot(dx, dy) + dw * 0.35;
+  return clamp(720 + dist * 0.07, 700, 1100);
+}
+
+function resolveView(view) {
+  if (view.box) return { x: view.box.x, y: view.box.y, w: view.box.w, h: view.box.h };
+  const xs = [];
+  const ys = [];
+  (view.years || []).forEach((year) => xs.push(xYear(year)));
+  (view.people || []).forEach((id) => {
+    const person = PEOPLE[id];
+    if (person) ys.push(person.y);
+  });
+  (view.includeEvents || []).forEach((id) => {
+    const ev = EVENTS.find((item) => item.id === id);
+    if (!ev) return;
+    const pt = eventPoint(ev);
+    xs.push(pt.x);
+    ys.push(pt.y);
+  });
+  (view.points || []).forEach((pt) => { xs.push(pt[0]); ys.push(pt[1]); });
+  if (!xs.length) xs.push(xYear(2000));
+  if (!ys.length) ys.push(800);
+  const padX = view.padX ?? 160;
+  const padL = view.padLeft ?? padX;
+  const padR = view.padRight ?? padX;
+  const padY = view.padY ?? 150;
+  const x0 = Math.min.apply(null, xs) - padL;
+  const x1 = Math.max.apply(null, xs) + padR;
+  const y0 = Math.min.apply(null, ys) - padY;
+  const y1 = Math.max.apply(null, ys) + padY;
+  return { x: x0, y: y0, w: Math.max(240, x1 - x0), h: Math.max(200, y1 - y0) };
+}
+
+function setViewBox(v) {
+  state.camera = { x: v.x, y: v.y, w: v.w, h: v.h };
+  if (svg) svg.setAttribute("viewBox", v.x + " " + v.y + " " + v.w + " " + v.h);
+  updateScaleDependent();
+}
+
+function animateCamera(to, ms) {
+  const from = { x: state.camera.x, y: state.camera.y, w: state.camera.w, h: state.camera.h };
+  if (cameraAnim) {
+    if (cameraAnim.id) cancelAnimationFrame(cameraAnim.id);
+    cameraAnim = null;
+  }
+  if (prefersReduced() || !ms) {
+    setViewBox(to);
+    return;
+  }
+  const start = (window.performance && performance.now) ? performance.now() : Date.now();
+  const dur = ms;
+  function frame(now) {
+    const t = Math.min(1, (now - start) / dur);
+    const e = easeInOutSine(t);
+    setViewBox({
+      x: from.x + (to.x - from.x) * e,
+      y: from.y + (to.y - from.y) * e,
+      w: from.w + (to.w - from.w) * e,
+      h: from.h + (to.h - from.h) * e
+    });
+    if (t < 1) {
+      cameraAnim = { id: requestAnimationFrame(frame), to: to };
+    } else {
+      cameraAnim = null;
+      setViewBox(to);
+    }
+  }
+  cameraAnim = { id: requestAnimationFrame(frame), to: to };
+}
+
+function layerOfEvent(ev) {
+  if (ev.layer) return ev.layer;
+  if (ev.person) return "events-" + ev.person;
+  return "events";
+}
+
+function drawShape(g, type, opts) {
+  opts = opts || {};
+  if (!opts.noRing) svgEl("circle", { class: "ring", r: type === "vision" ? 36 : 20, cx: 0, cy: 0 }, g);
+  if (type === "vision") {
+    svgEl("circle", { r: 20, fill: "#fbf6ee", stroke: "#8a4b2c", "stroke-width": 4 }, g);
+    svgEl("circle", { r: 8, fill: "#8a4b2c" }, g);
+  } else if (type === "revelation") {
+    svgEl("circle", { r: 10, fill: "#fbf6ee", stroke: "#8a4b2c", "stroke-width": 2.6 }, g);
+    svgEl("circle", { r: 4, fill: "#8a4b2c" }, g);
+  } else if (type === "moment") {
+    svgEl("circle", { r: 8, fill: "#fbf6ee", stroke: "#7a6f62", "stroke-width": 2.6 }, g);
+  } else if (type === "death") {
+    svgEl("circle", { r: 9, fill: "#1c1c1c" }, g);
+  } else if (type === "want" || type === "illness") {
+    svgEl("rect", { x: -8, y: -8, width: 16, height: 16, rx: 3, fill: "#2f7d4a" }, g);
+  } else if (type === "heartache") {
+    svgEl("path", { d: heartPath(10), fill: "#d26a8c" }, g);
+  } else if (type === "harm") {
+    svgEl("path", { d: "M0,-11 L11,0 L0,11 L-11,0 Z", fill: "#b33a32" }, g);
+  } else if (type === "spouse") {
+    svgEl("path", { d: starPath(13), fill: "#c4962c" }, g);
+  } else if (type === "child") {
+    svgEl("path", { d: starPath(12), fill: "#3d6f9a" }, g);
+  } else if (type === "grandchild") {
+    svgEl("path", { d: starPath(12), fill: "#c47a9a" }, g);
+  } else if (type === "altar" || type === "blessing" || type === "consecration" || type === "temple") {
+    const fill = type === "consecration" ? "#6e5a3a" : type === "blessing" ? "#5d6a4a" : "#7a6236";
+    svgEl("path", { d: shieldPath(), fill: fill }, g);
+    if (type === "altar") {
+      svgEl("rect", { x: -5.5, y: 1, width: 11, height: 6, rx: 1, fill: "#f3eadc" }, g);
+      svgEl("path", { d: "M0,-9 C3,-5 3,-2 0,-1 C-3,-2 -3,-5 0,-9Z", fill: "#f3eadc" }, g);
+    } else if (type === "blessing") {
+      svgEl("path", { d: "M-6,4 C-6,-3 6,-3 6,4", fill: "none", stroke: "#f3eadc", "stroke-width": 1.6, "stroke-linecap": "round" }, g);
+      svgEl("circle", { cy: -4, r: 2.4, fill: "#f3eadc" }, g);
+    } else if (type === "consecration") {
+      svgEl("circle", { cy: -3, r: 2.1, fill: "#f3eadc" }, g);
+      svgEl("rect", { x: -1.1, y: -1, width: 2.2, height: 8, rx: 1, fill: "#f3eadc" }, g);
+    } else {
+      svgEl("path", { d: "M0,-7 L3,-4 H-3 Z M-3.8,-4 H3.8 V5 H-3.8 Z M0,-9 V-7", stroke: "#f3eadc", fill: "none", "stroke-width": 1.4, "stroke-linejoin": "round" }, g);
+    }
+  }
+}
+
+function renderWorld() {
+  svg = $("world");
+  while (svg.firstChild) svg.removeChild(svg.firstChild);
+
+  const defs = svgEl("defs", null, svg);
+  const fade = svgEl("linearGradient", { id: "branch-fade", x1: "0", y1: "0", x2: "1", y2: "0" }, defs);
+  svgEl("stop", { offset: "0%", "stop-color": "#000", "stop-opacity": "0.7" }, fade);
+  svgEl("stop", { offset: "100%", "stop-color": "#000", "stop-opacity": "0" }, fade);
+
+  // Era boundaries (schematic time; the ruler names each era)
+  const axis = svgEl("g", { "data-layer": "axis", class: "layer" }, svg);
+  const famTop = PEOPLE.lehi.y - 150;
+  const famBottom = PEOPLE.ishmael.y + 70;
+  ERAS.forEach((era, i) => {
+    if (i > 0 && era.x0 <= xYear(100) + 1) {
+      svgEl("line", {
+        x1: era.x0, x2: era.x0, y1: famTop, y2: famBottom,
+        stroke: "rgba(92,79,66,0.16)", "stroke-width": 1.2, "stroke-dasharray": "3 6",
+        "vector-effect": "non-scaling-stroke"
+      }, axis);
+    }
+  });
+
+  // Marriage: Lehi and Sariah travel side by side; neither line is absorbed
+  const marriage = svgEl("g", { "data-layer": "marriage", class: "layer" }, svg);
+  const mx = xYear(0.6);
+  svgEl("rect", {
+    x: mx, y: PEOPLE.lehi.y, width: xYear(PEOPLE.lehi.end) - mx,
+    height: PEOPLE.sariah.y - PEOPLE.lehi.y,
+    fill: "rgba(196,150,44,0.07)"
+  }, marriage);
+  svgEl("line", {
+    x1: mx, x2: mx, y1: PEOPLE.lehi.y, y2: PEOPLE.sariah.y,
+    stroke: "#c4962c", "stroke-width": 2.4, "vector-effect": "non-scaling-stroke"
+  }, marriage);
+
+  // Births in the wilderness (1 Ne 18:7): stems from the parents' band
+  const births = svgEl("g", { "data-layer": "births", class: "layer" }, svg);
+  const familyJoinY = (PEOPLE.lehi.y + PEOPLE.sariah.y) / 2;
+  ["jacob", "joseph"].forEach((id) => {
+    const child = PEOPLE[id];
+    const x = xYear(child.start);
+    svgEl("path", {
+      d: "M" + x + "," + familyJoinY + " C" + x + "," + ((familyJoinY + child.y) / 2) + " " + x + "," + ((familyJoinY + child.y) / 2) + " " + x + "," + child.y,
+      fill: "none", stroke: child.color, "stroke-width": 1.6, "stroke-linecap": "round",
+      "stroke-dasharray": "2 6", "vector-effect": "non-scaling-stroke", opacity: "0.55"
+    }, births);
+  });
+
+  Object.keys(PEOPLE).forEach((id) => {
+    const p = PEOPLE[id];
+    const g = svgEl("g", { "data-layer": "person-" + id, class: "layer" }, svg);
+    const x0 = xYear(p.start);
+    const x1 = xYear(p.end);
+    svgEl("line", {
+      x1: x0, y1: p.y, x2: x1, y2: p.y,
+      stroke: p.color, "stroke-width": p.faint ? 2.2 : 3.2,
+      "stroke-linecap": "round", opacity: p.faint ? "0.55" : "1",
+      "vector-effect": "non-scaling-stroke"
+    }, g);
+    if (p.fadeTo) {
+      svgEl("line", {
+        x1: x1, y1: p.y, x2: xYear(p.fadeTo), y2: p.y,
+        stroke: p.color, "stroke-width": 2.2, "stroke-linecap": "round",
+        "stroke-dasharray": "8 8", opacity: "0.38", "vector-effect": "non-scaling-stroke"
+      }, g);
+    }
+    svgEl("circle", { cx: x0, cy: p.y, r: 4.5, fill: p.color, opacity: p.faint ? "0.55" : "1" }, g);
+    const label = svgEl("text", {
+      x: x0 + 16, y: p.y - 18, class: "person-label", fill: p.color, "text-anchor": "start"
+    }, g);
+    label.textContent = p.name;
+  });
+
+  // Pattern band on Laman's and Lemuel's lines (scene 7)
+  const pattern = svgEl("g", { "data-layer": "pattern", class: "layer" }, svg);
+  svgEl("rect", {
+    x: xYear(13), y: PEOPLE.laman.y - 26,
+    width: xYear(41.5) - xYear(13), height: PEOPLE.lemuel.y - PEOPLE.laman.y + 52, rx: 26,
+    fill: "rgba(154,90,58,0.08)", stroke: "rgba(154,90,58,0.25)", "stroke-dasharray": "6 6",
+    "vector-effect": "non-scaling-stroke"
+  }, pattern);
+
+  // Possible consequences from the hunger moment on Lehi's line (scene 9)
+  const branches = svgEl("g", { "data-layer": "branches", class: "layer" }, svg);
+  const origin = eventPoint(EVENTS.find((ev) => ev.id === "l-hunger"));
+  const originMark = svgEl("g", { transform: "translate(" + origin.x + "," + origin.y + ")" }, branches);
+  drawShape(originMark, "want", { noRing: true });
+  const originCap = svgEl("text", { x: origin.x - 14, y: origin.y + 36, class: "note-label scale-ann", "text-anchor": "end" }, branches);
+  originCap.textContent = "Hunger; Lehi murmurs too (16:20)";
+  const banner = svgEl("text", { x: origin.x + 30, y: origin.y - 150, class: "banner-label scale-banner" }, branches);
+  banner.textContent = "POSSIBLE CONSEQUENCES — NOT PREDICTIONS";
+  BRANCHES.forEach((branch) => {
+    const pts = branch.via.map((pair) => [xYear(pair[0]), origin.y + pair[1]]);
+    const d = "M" + origin.x + "," + origin.y +
+      " C" + pts[0][0] + "," + pts[0][1] + " " + pts[1][0] + "," + pts[1][1] + " " + pts[2][0] + "," + pts[2][1];
+    svgEl("path", {
+      d: d, fill: "none", stroke: branch.color, "stroke-width": 2.2, "stroke-dasharray": "7 8",
+      "stroke-linecap": "round", opacity: "0.72", "vector-effect": "non-scaling-stroke"
+    }, branches);
+    svgEl("circle", { cx: pts[2][0], cy: pts[2][1], r: 3, fill: branch.color, opacity: "0.45" }, branches);
+    const a = svgEl("text", { x: pts[2][0] + 14, y: pts[2][1] - 4, class: "note-label scale-ann", fill: branch.color }, branches);
+    a.textContent = branch.label;
+    const b = svgEl("text", { x: pts[2][0] + 14, y: pts[2][1] + 22, class: "branch-sub scale-note", fill: branch.color }, branches);
+    b.textContent = branch.consequence;
+  });
+  const unfinished = svgEl("text", { x: origin.x + 30, y: origin.y + 240, class: "branch-sub scale-note" }, branches);
+  unfinished.textContent = "All paths unfinished. None guaranteed. Lehi’s actual line stays separate.";
+
+  // Counsel path (scene 11): Nephi → his father → the Lord
+  const counsel = svgEl("g", { "data-layer": "next-step", class: "layer" }, svg);
+  const cx = xYear(41.3);
+  svgEl("path", {
+    d: "M" + cx + "," + (PEOPLE.nephi.y - 12) + " C" + (cx - 30) + "," + (PEOPLE.nephi.y - 200) + " " + (cx - 30) + "," + (PEOPLE.lehi.y + 200) + " " + cx + "," + (PEOPLE.lehi.y + 12),
+    fill: "none", stroke: "#8a4b2c", "stroke-width": 1.8, "stroke-dasharray": "5 6",
+    "vector-effect": "non-scaling-stroke"
+  }, counsel);
+  const ix = xYear(43);
+  svgEl("path", {
+    d: "M" + ix + "," + (PEOPLE.lehi.y - 24) + " L" + ix + "," + 168,
+    fill: "none", stroke: "#8a4b2c", "stroke-width": 1.8, "stroke-dasharray": "5 6",
+    "vector-effect": "non-scaling-stroke"
+  }, counsel);
+
+  ANNOTATIONS.forEach((note) => {
+    const g = svgEl("g", { "data-layer": note.layer, class: "layer" }, svg);
+    const t = svgEl("text", {
+      x: note.x, y: note.y,
+      class: note.kind === "action" ? "banner-label scale-banner" : "note-label scale-ann",
+      "text-anchor": note.anchor || "start",
+      "data-note": note.id
+    }, g);
+    const lines = note.lines || (note.text ? [note.text] : []);
+    if (lines.length <= 1) {
+      t.textContent = lines[0] || "";
+    } else {
+      lines.forEach((line, i) => {
+        const span = svgEl("tspan", { x: note.x, dy: i === 0 ? "0" : String(note.lineHeight || 22) }, t);
+        span.textContent = line;
+      });
+    }
+  });
+
+  // In-diagram key under Lehi's line (scene 2)
+  const inlineLegend = svgEl("g", { "data-layer": "inline-legend", class: "layer" }, svg);
+  const lx = xYear(1);
+  svgEl("rect", {
+    x: lx, y: 300, width: 1010, height: 140, rx: 16,
+    fill: "rgba(251,246,238,0.94)", stroke: "rgba(90,62,43,0.16)", "stroke-width": 1.2
+  }, inlineLegend);
+  const legendTitle = svgEl("text", { x: lx + 14, y: 322, class: "legend-text legend-title" }, inlineLegend);
+  legendTitle.textContent = "How to read the marks";
+  const legendItems = [
+    ["death", "Death"],
+    ["want", "Hunger / illness"],
+    ["heartache", "Heartache"],
+    ["harm", "Harm by another"],
+    ["revelation", "Revelation"],
+    ["spouse", "Spouse"],
+    ["child", "Children"],
+    ["grandchild", "Grandchildren"],
+    ["altar", "Sacred moment"],
+    ["moment", "Turning point"]
+  ];
+  legendItems.forEach((item, i) => {
+    const col = i % 5;
+    const row = i < 5 ? 0 : 1;
+    const x = lx + 30 + col * 198;
+    const y = 360 + row * 50;
+    const g = svgEl("g", { transform: "translate(" + x + "," + y + ")" }, inlineLegend);
+    drawShape(g, item[0], { noRing: true });
+    const lab = svgEl("text", { x: 20, y: 5, class: "legend-text" }, g);
+    lab.textContent = item[1];
+  });
+
+  renderLehi();
+  renderGenerations();
+
+  EVENTS.forEach((ev) => {
+    const pt = eventPoint(ev);
+    const g = svgEl("g", {
+      class: "event",
+      "data-event": ev.id,
+      "data-layer": layerOfEvent(ev),
+      transform: "translate(" + pt.x + "," + pt.y + ")"
+    }, svg);
+    svgEl("circle", { class: "hit", r: ev.type === "vision" ? 44 : 22, cx: 0, cy: 0 }, g);
+    drawShape(g, ev.type);
+    const endAnchor = ev.labelAnchor === "end";
+    const label = svgEl("text", {
+      class: "caption event-caption",
+      x: ev.labelDx || (endAnchor ? -16 : 16),
+      y: ev.labelDy || -18,
+      "text-anchor": endAnchor ? "end" : "start"
+    }, g);
+    label.textContent = ev.label;
+    g.addEventListener("click", (e) => {
+      e.stopPropagation();
+      exploreEvent(ev.id);
+    });
+  });
+}
+
+/* Deterministic pseudo-random numbers so the rows look the same every time. */
+function mulberry32(seed) {
+  let a = seed >>> 0;
+  return function () {
+    a = (a + 0x6D2B79F5) >>> 0;
+    let t = a;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+/* Build the generation rows (pure data; also used by the tests).
+   One continuous stack: each row is one person, a straight horizontal line
+   from birth (x0) to death (x1). Every row starts a little later than the
+   row above and sits just below it. Spacing tightens smoothly with depth, so
+   there are no gaps or bands. Rows are split into reveal steps (0, 1, 2)
+   for scenes 15–17. */
+function buildGenerationRows() {
+  const G = GENERATIONS;
+  const rand = mulberry32(G.seed);
+  const total = G.stepRows.reduce((a, b) => a + b, 0);
+  const rows = [];
+  let y = G.top;
+  let birth = G.firstBirth;
+  let step = 0, stepLeft = G.stepRows[0];
+  for (let i = 0; i < total; i++) {
+    while (stepLeft === 0) { step += 1; stepLeft = G.stepRows[step]; }
+    stepLeft -= 1;
+    const x0 = Math.round(birth + (rand() - 0.5) * G.jitter);
+    const life = G.lifeMin + rand() * (G.lifeMax - G.lifeMin);
+    // lineage color: Lehi's children's lanes first, then an earlier row
+    let family;
+    if (i < G.roots.length * 3) family = G.roots[i % G.roots.length];
+    else {
+      const pool = rows.filter((r) => r.x0 < x0 - 700);
+      family = (pool.length ? pool[Math.floor(rand() * pool.length)] : rows[Math.floor(rand() * rows.length)]).family;
+    }
+    const r = { step: step, family: family, y: Math.round(y * 10) / 10, x0: x0, x1: Math.round(x0 + life), marks: [] };
+    const m = [];
+    const rate = G.markRate[step];
+    if (rand() < 0.42 * rate) m.push({ type: "spouse", x: x0 + life * (0.2 + rand() * 0.1) });
+    if (m.length && rand() < 0.5) m.push({ type: "child", x: x0 + life * (0.34 + rand() * 0.14) });
+    if (rand() < 0.12 * rate) m.push({ type: "death", x: x0 + life * (0.55 + rand() * 0.3) });
+    else if (rand() < 0.1 * rate) m.push({ type: "want", x: x0 + life * (0.5 + rand() * 0.35) });
+    else if (rand() < 0.08 * rate) m.push({ type: "heartache", x: x0 + life * (0.5 + rand() * 0.35) });
+    r.marks = m.map((k) => ({ type: k.type, x: Math.round(k.x) }));
+    rows.push(r);
+    y += G.pitchMin + (G.pitchMax - G.pitchMin) * Math.exp(-i / G.pitchDecay);
+    birth += G.stepMin + (G.stepMax - G.stepMin) * Math.exp(-i / G.stepDecay);
+  }
+  return rows;
+}
+
+function shiftPath(d, dx, dy) {
+  return d.replace(/(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)/g, (all, a, b) => (parseFloat(a) + dx).toFixed(1) + "," + (parseFloat(b) + dy).toFixed(1));
+}
+
+/* Each reveal step is its own layer (gen-0, gen-1, gen-2) with a clip
+   rectangle so its rows can grow in left to right after the camera settles. */
+function renderGenerations() {
+  const rows = buildGenerationRows();
+  const defs = svg.querySelector("defs") || svgEl("defs", null, svg);
+  const shapes = {
+    spouse: { d: starPath(8), fill: "#c4962c" },
+    child: { d: starPath(7.5), fill: "#3d6f9a" },
+    heartache: { d: heartPath(7), fill: "#d26a8c" },
+    death: { circle: 5.5, fill: "#1c1c1c" },
+    want: { d: "M-5,-5 L5,-5 L5,5 L-5,5 Z", fill: "#2f7d4a" }
+  };
+  GENERATIONS.stepRows.forEach((n, step) => {
+    const mine = rows.filter((r) => r.step === step);
+    const minX = Math.min(...mine.map((r) => r.x0)) - 20;
+    const maxX = Math.max(...mine.map((r) => r.x1)) + 20;
+    const minY = Math.min(...mine.map((r) => r.y)) - 20;
+    const maxY = Math.max(...mine.map((r) => r.y)) + 20;
+    const clip = svgEl("clipPath", { id: "gen-clip-" + step }, defs);
+    svgEl("rect", { x: minX, y: minY, width: maxX - minX, height: maxY - minY, "data-full": maxX - minX, class: "gen-clip-rect", id: "gen-clip-rect-" + step }, clip);
+    const g = svgEl("g", { "data-layer": "gen-" + step, class: "layer gen-step", "clip-path": "url(#gen-clip-" + step + ")" }, svg);
+    const lineD = {}, dotD = {}, markD = {};
+    mine.forEach((r) => {
+      lineD[r.family] = (lineD[r.family] || "") + "M" + r.x0 + "," + r.y + "H" + r.x1;
+      if (step < 2) dotD[r.family] = (dotD[r.family] || "") + "M" + (r.x0 - 4) + "," + r.y + "a4,4 0 1,0 8,0a4,4 0 1,0 -8,0";
+      r.marks.forEach((m) => {
+        const sh = shapes[m.type];
+        const part = sh.circle ? "M" + (m.x - sh.circle) + "," + r.y + "a" + sh.circle + "," + sh.circle + " 0 1,0 " + (2 * sh.circle) + ",0a" + sh.circle + "," + sh.circle + " 0 1,0 " + (-2 * sh.circle) + ",0" : shiftPath(sh.d, m.x, r.y);
+        markD[m.type] = (markD[m.type] || "") + part;
+      });
+    });
+    const sw = GENERATIONS.strokeWidth[step];
+    Object.keys(lineD).sort().forEach((fam) => {
+      svgEl("path", { d: lineD[fam], fill: "none", stroke: PEOPLE[fam].color, "stroke-width": sw, opacity: "0.78", "stroke-linecap": "round", "vector-effect": "non-scaling-stroke", class: "gen-lines" }, g);
+      if (dotD[fam]) svgEl("path", { d: dotD[fam], fill: PEOPLE[fam].color, opacity: "0.85", class: "gen-starts" }, g);
+    });
+    Object.keys(markD).sort().forEach((type) => {
+      svgEl("path", { d: markD[type], fill: shapes[type].fill, class: "gen-marks", "data-mark": type }, g);
+    });
+  });
+}
+
+/* Grow-in: when a scene first reveals a generation step, its rows draw in
+   left to right after the camera settles. Reduced motion shows them at once. */
+let growTimers = [];
+function cancelGrow() {
+  growTimers.forEach((t) => { clearTimeout(t.timeout); if (t.raf) cancelAnimationFrame(t.raf); });
+  growTimers = [];
+}
+function setGrow(step, frac) {
+  const rect = svg && svg.querySelector("#gen-clip-rect-" + step);
+  if (!rect) return;
+  rect.setAttribute("width", String(Math.max(0, parseFloat(rect.getAttribute("data-full")) * frac)));
+}
+function startGrow(scene, delayMs, forward) {
+  cancelGrow();
+  GENERATIONS.stepRows.forEach((n, step) => setGrow(step, 1));
+  const steps = scene.grow || [];
+  if (!steps.length || !forward || prefersReduced()) return;
+  steps.forEach((step) => {
+    setGrow(step, 0);
+    const timer = { timeout: null, raf: null };
+    timer.timeout = setTimeout(() => {
+      const start = (window.performance && performance.now) ? performance.now() : Date.now();
+      function frame(now) {
+        const t = Math.min(1, (now - start) / GENERATIONS.growMs);
+        setGrow(step, easeInOutSine(t));
+        if (t < 1) timer.raf = requestAnimationFrame(frame);
+      }
+      timer.raf = requestAnimationFrame(frame);
+    }, delayMs + 120);
+    growTimers.push(timer);
+  });
+}
+
+function renderLehi() {
+  const L = LEHI;
+  const g = svgEl("g", { "data-layer": "lehi", class: "layer" }, svg);
+  function text(x, y, str, cls, anchor) {
+    const node = svgEl("text", { x: x, y: y, class: cls, "text-anchor": anchor || "start" }, g);
+    node.textContent = str;
+    return node;
+  }
+  const defs = svg.querySelector("defs") || svgEl("defs", null, svg);
+  const marker = svgEl("marker", { id: "lehi-arrow", viewBox: "0 0 10 10", refX: "8", refY: "5", markerWidth: "7", markerHeight: "7", orient: "auto-start-reverse" }, defs);
+  svgEl("path", { d: "M0,0 L10,5 L0,10 Z", fill: "#8a4b2c" }, marker);
+
+  // Region plate and headings
+  svgEl("rect", { x: L.box.x + 20, y: L.box.y + 10, width: L.box.w - 40, height: L.box.h - 20, rx: 36, fill: "rgba(255,252,246,0.7)", stroke: "rgba(90,62,43,0.14)", "stroke-width": 2 }, g);
+  text(L.startX - 40, 1912, "Lehi’s family in Lehi’s dream", "lehi-title");
+  text(L.startX - 40, 1956, "1 Nephi 8 and 11 · a scriptural pattern", "lehi-small");
+  text(L.tree.x - 190, 1912, "POSSIBLE PATHS — NOT FIXED DESTINIES", "lehi-banner", "end");
+  text(L.tree.x - 190, 1954, "Agency stays open on every line.", "lehi-small", "end");
+
+  // Dream moment
+  svgEl("line", { x1: L.dreamX, x2: L.dreamX, y1: 1990, y2: 2655, stroke: "rgba(138,75,44,0.4)", "stroke-width": 3, "stroke-dasharray": "10 12" }, g);
+  text(L.dreamX, 2700, "the dream (1 Ne 8)", "lehi-small", "middle");
+
+  // River of water (8:13): soft band between the tree side and the building side
+  const rv = L.river;
+  let wave = "M" + rv.x0 + "," + rv.y;
+  for (let x = rv.x0; x < rv.x1; x += 160) {
+    wave += " Q" + (x + 40) + "," + (rv.y - 12) + " " + (x + 80) + "," + rv.y + " T" + Math.min(x + 160, rv.x1) + "," + rv.y;
+  }
+  svgEl("path", { d: wave, fill: "none", stroke: "#a9c0cc", "stroke-width": 34, "stroke-linecap": "round", opacity: "0.6" }, g);
+  svgEl("path", { d: wave, fill: "none", stroke: "#eef4f6", "stroke-width": 3, opacity: "0.9", transform: "translate(0,-6)" }, g);
+  text(rv.x1 - 10, rv.y + 52, "river of water (8:13)", "lehi-small lehi-italic", "end");
+
+  // Tree of life (8:10–12; 11:21–25)
+  const tr = L.tree;
+  svgEl("circle", { cx: tr.x, cy: tr.y, r: 150, fill: "rgba(196,150,44,0.10)" }, g);
+  svgEl("path", { d: "M" + (tr.x - 12) + "," + (tr.y + 138) + " C" + (tr.x - 8) + "," + (tr.y + 92) + " " + (tr.x - 16) + "," + (tr.y + 62) + " " + (tr.x - 5) + "," + (tr.y + 28) + " L" + (tr.x + 6) + "," + (tr.y + 28) + " C" + (tr.x + 14) + "," + (tr.y + 62) + " " + (tr.x + 8) + "," + (tr.y + 92) + " " + (tr.x + 14) + "," + (tr.y + 138) + " Z", fill: "#6b4a2e" }, g);
+  [[0, -12, 72, "#6f8a5a"], [-62, 10, 54, "#7d9866"], [62, 10, 54, "#7d9866"], [-36, -54, 50, "#87a06f"], [36, -54, 50, "#87a06f"], [0, 26, 52, "#6a8455"]].forEach((c) => {
+    svgEl("circle", { cx: tr.x + c[0], cy: tr.y + c[1], r: c[2], fill: c[3], opacity: "0.92" }, g);
+  });
+  [[-40, -20], [22, -40], [50, 18], [-18, 30], [-64, 22], [6, -78], [70, -20], [-30, -70]].forEach((f) => {
+    svgEl("circle", { cx: tr.x + f[0], cy: tr.y + f[1], r: 8, fill: "#fffdf6", stroke: "#d8c7b0", "stroke-width": 1.5 }, g);
+  });
+  svgEl("line", { x1: tr.x - 90, x2: tr.x + 90, y1: tr.y + 140, y2: tr.y + 140, stroke: "rgba(90,62,43,0.3)", "stroke-width": 3, "stroke-linecap": "round" }, g);
+  text(tr.x - 170, tr.y + 20, "Tree of life", "lehi-label", "end");
+  text(tr.x - 170, tr.y + 62, "the love of God (8:10–12; 11:21–25)", "lehi-small", "end");
+
+  // Iron rod (8:19–20; 11:25) along the bank, leading to the tree
+  const rd = L.rod;
+  const rodPath = "M" + rd.x0 + "," + rd.y + " L" + rd.x1 + "," + rd.y + " C" + (rd.x1 + 110) + "," + rd.y + " " + (tr.x - 30) + "," + (tr.y + 200) + " " + (tr.x - 22) + "," + (tr.y + 140);
+  svgEl("path", { d: rodPath, fill: "none", stroke: "#3c3127", "stroke-width": 7, "stroke-linecap": "round" }, g);
+  for (let x = rd.x0 + 40; x < rd.x1; x += 140) {
+    svgEl("line", { x1: x, x2: x, y1: rd.y, y2: rd.y + 18, stroke: "#3c3127", "stroke-width": 4 }, g);
+  }
+  text(rd.x0 + 20, rd.y + 52, "iron rod — the word of God (8:19–20; 11:25)", "lehi-small");
+
+  // Great and spacious building (8:26–28; 11:35–36): floating, no foundation
+  const b = L.building;
+  svgEl("ellipse", { cx: b.x + b.w / 2, cy: b.y + b.h + 38, rx: b.w * 0.55, ry: 9, fill: "rgba(60,49,39,0.09)" }, g);
+  svgEl("rect", { x: b.x, y: b.y, width: b.w, height: b.h, fill: "#bdb5aa", stroke: "#8d857a", "stroke-width": 3 }, g);
+  svgEl("rect", { x: b.x - 12, y: b.y - 14, width: b.w + 24, height: 14, fill: "#a79f94" }, g);
+  for (let r = 0; r < 5; r++) {
+    for (let c = 0; c < 5; c++) {
+      svgEl("rect", { x: b.x + 18 + c * 42, y: b.y + 16 + r * 33, width: 22, height: 18, fill: "#f6efe3", opacity: "0.85" }, g);
+    }
+  }
+  text(b.x - 34, b.y + 34, "Great and spacious building", "lehi-label", "end");
+  text(b.x - 34, b.y + 78, "the pride of the world (8:26–28; 11:35–36)", "lehi-small", "end");
+  text(b.x - 34, b.y + 120, "some who had tasted later turned away (8:28)", "lehi-small lehi-italic", "end");
+
+  // Family lanes
+  L.people.forEach((person, i) => {
+    const y = person.y;
+    svgEl("circle", { cx: L.startX, cy: y, r: 8, fill: person.color }, g);
+    svgEl("line", { x1: L.startX, x2: L.dreamX, y1: y, y2: y, stroke: person.color, "stroke-width": 6, "stroke-linecap": "round" }, g);
+    text(L.startX + 18, y - 18, person.name, "lehi-label");
+    if (person.toward === "tree") {
+      const yy = rd.y - 10 - i * 9;
+      const d = "M" + L.dreamX + "," + y +
+        " C" + (L.dreamX + 260) + "," + y + " " + (rd.x0 - 120) + "," + yy + " " + (rd.x0 + 90) + "," + yy +
+        " L" + rd.x1 + "," + yy +
+        " C" + (rd.x1 + 100) + "," + yy + " " + (tr.x - 46 + i * 4) + "," + (tr.y + 190) + " " + (tr.x - 40 + i * 12) + "," + (tr.y + 128);
+      svgEl("path", { d: d, fill: "none", stroke: person.color, "stroke-width": 4, "stroke-dasharray": "14 12", "stroke-linecap": "round", opacity: "0.8" }, g);
+    } else {
+      // Declined for now: line pauses, then two faint possibilities stay open
+      svgEl("line", { x1: L.dreamX, x2: L.endOpenX, y1: y, y2: y, stroke: person.color, "stroke-width": 4, "stroke-dasharray": "14 12", opacity: "0.8" }, g);
+      svgEl("circle", { cx: L.endOpenX, cy: y, r: 11, fill: "#fbf6ee", stroke: person.color, "stroke-width": 4 }, g);
+      const toBuilding = "M" + L.endOpenX + "," + y + " C" + (L.endOpenX + 520) + "," + y + " " + (b.x - 520) + "," + (b.y + b.h + 4 + i * 2) + " " + (b.x - 8) + "," + (b.y + b.h - 22 + (i - 4) * 18);
+      svgEl("path", { d: toBuilding, fill: "none", stroke: person.color, "stroke-width": 3, "stroke-dasharray": "3 12", "stroke-linecap": "round", opacity: "0.55" }, g);
+      const backToRod = "M" + L.endOpenX + "," + y + " C" + (L.endOpenX + 70) + "," + (y - 30) + " " + (rd.x0 - 30) + "," + (rd.y + 60) + " " + (rd.x0 - 4) + "," + (rd.y + 8);
+      svgEl("path", { d: backToRod, fill: "none", stroke: person.color, "stroke-width": 3, "stroke-dasharray": "3 12", "stroke-linecap": "round", opacity: "0.55" }, g);
+    }
+  });
+  text(L.endOpenX + 26, 2482, "the way back stays open", "lehi-small lehi-italic");
+  text(L.endOpenX + 30, 2684, "a possible path, not a fixed destiny", "lehi-small lehi-italic");
+
+  // Lehi keeps pleading (8:36–37): a warm arc from his line toward his sons
+  const plead = "M" + (L.dreamX + 110) + "," + (L.people[0].y + 6) + " C" + (L.dreamX + 280) + ",2150 " + (L.dreamX + 200) + ",2410 " + (L.endOpenX - 14) + "," + (L.people[4].y - 14);
+  svgEl("path", { d: plead, fill: "none", stroke: "#8a4b2c", "stroke-width": 5, "stroke-dasharray": "2 10", "stroke-linecap": "round", "marker-end": "url(#lehi-arrow)" }, g);
+  text(2250, 2438, "with all the feeling of a tender parent", "lehi-small lehi-italic", "end");
+}
+
+function allLayerNodes() {
+  return svg ? svg.querySelectorAll("[data-layer]") : [];
+}
+
+function applyLayers(show) {
+  const allowed = {};
+  show.forEach((name) => { allowed[name] = true; });
+  const nodes = allLayerNodes();
+  for (let i = 0; i < nodes.length; i++) {
+    const node = nodes[i];
+    const layers = (node.getAttribute("data-layer") || "").split(/\s+/);
+    let on = false;
+    for (let j = 0; j < layers.length; j++) {
+      if (allowed[layers[j]]) { on = true; break; }
+    }
+    if (on) node.classList.remove("is-hidden");
+    else node.classList.add("is-hidden");
+    node.setAttribute("aria-hidden", on ? "false" : "true");
+  }
+}
+
+function applyHighlights(ids) {
+  const set = {};
+  (ids || []).forEach((id) => { set[id] = true; });
+  const nodes = svg.querySelectorAll("[data-event]");
+  for (let i = 0; i < nodes.length; i++) {
+    const node = nodes[i];
+    const id = node.getAttribute("data-event");
+    if (set[id]) node.classList.add("is-highlight");
+    else node.classList.remove("is-highlight");
+  }
+}
+
+function applyCaptionScale(selector, baseFont, targetPx, spu) {
+  const scale = clamp(targetPx / (baseFont * Math.max(spu, 0.05)), 0.45, 2.6);
+  const nodes = svg.querySelectorAll(selector);
+  for (let i = 0; i < nodes.length; i++) {
+    const node = nodes[i];
+    const x = parseFloat(node.getAttribute("x") || "0");
+    const y = parseFloat(node.getAttribute("y") || "0");
+    node.setAttribute("transform", "translate(" + x + "," + y + ") scale(" + scale.toFixed(3) + ") translate(" + (-x) + "," + (-y) + ")");
+  }
+}
+
+function updateScaleDependent() {
+  if (!svg || !svg.getBoundingClientRect) return;
+  const frame = visibleSvgFrame();
+  if (!frame.dispW) return;
+  const spu = frame.dispW / state.camera.w;
+  applyCaptionScale(".caption", 12, 15, spu);
+  applyCaptionScale(".scale-note", 16, 18, spu);
+  applyCaptionScale(".scale-ann", 18, 18, spu);
+  applyCaptionScale(".scale-banner", 16, 17, spu);
+  applyCaptionScale(".legend-text", 12, 15, spu);
+  hideOverflowingLabels();
+  if (state.explore && state.camera.w < 1650) svg.classList.add("tight-captions");
+  else svg.classList.remove("tight-captions");
+  updateRuler();
+}
+
+function ancestorTranslate(node) {
+  let x = 0, y = 0;
+  let el = node.parentNode;
+  while (el && el !== svg) {
+    const tr = el.getAttribute && el.getAttribute("transform");
+    if (tr) {
+      const m = /translate\(([-0-9.e+]+)[\s,]+([-0-9.e+]+)\)/.exec(tr);
+      if (m) { x += parseFloat(m[1]); y += parseFloat(m[2]); }
+    }
+    el = el.parentNode;
+  }
+  return { x: x, y: y };
+}
+
+function inNamedLayer(node, layer) {
+  let el = node;
+  while (el && el !== svg) {
+    if (el.getAttribute && el.getAttribute("data-layer") === layer) return true;
+    el = el.parentNode;
+  }
+  return false;
+}
+
+function labelBox(node) {
+  if (typeof node.getBBox !== "function") return null;
+  let box;
+  try { box = node.getBBox(); } catch (err) { return null; }
+  if (!box || (box.width === 0 && box.height === 0)) return null;
+  let sc = 1;
+  const sm = /scale\(([-0-9.]+)\)/.exec(node.getAttribute("transform") || "");
+  if (sm) sc = parseFloat(sm[1]);
+  const ax = parseFloat(node.getAttribute("x") || "0");
+  const ay = parseFloat(node.getAttribute("y") || "0");
+  const extra = ancestorTranslate(node);
+  return {
+    x: ax + (box.x - ax) * sc + extra.x,
+    y: ay + (box.y - ay) * sc + extra.y,
+    w: box.width * sc,
+    h: box.height * sc
+  };
+}
+
+function hideOverflowingLabels() {
+  if (!svg) return;
+  // Visible world region = camera plus any letterbox margin the SVG shows.
+  const frame = visibleSvgFrame();
+  const spu = frame.dispW / Math.max(1, state.camera.w);
+  const mx = frame.offX / Math.max(spu, 1e-6), my = frame.offY / Math.max(spu, 1e-6);
+  const vb = { x: state.camera.x - mx, y: state.camera.y - my, w: state.camera.w + 2 * mx, h: state.camera.h + 2 * my };
+  const inset = 14 / Math.max(spu, 1e-6);
+  const nodes = svg.querySelectorAll(".person-label, .note-label, .banner-label, .event-caption, .branch-sub");
+  for (let i = 0; i < nodes.length; i++) {
+    const node = nodes[i];
+    if (inNamedLayer(node, "inline-legend")) continue;
+    const b = labelBox(node);
+    if (!b) continue;
+    const overflow = b.x < vb.x + inset || b.y < vb.y + inset || (b.x + b.w) > vb.x + vb.w - inset || (b.y + b.h) > vb.y + vb.h - inset;
+    if (overflow) node.classList.add("is-clipped-hidden");
+    else node.classList.remove("is-clipped-hidden");
+  }
+}
+
+function visibleSvgFrame() {
+  const rect = svg && svg.getBoundingClientRect ? svg.getBoundingClientRect() : { width: 1200, height: 560 };
+  const vbAspect = state.camera.w / Math.max(1, state.camera.h);
+  const elAspect = rect.width / Math.max(1, rect.height);
+  let dispW = rect.width, dispH = rect.height, offX = 0, offY = 0;
+  if (elAspect > vbAspect) {
+    dispW = rect.height * vbAspect;
+    offX = (rect.width - dispW) / 2;
+  } else {
+    dispH = rect.width / vbAspect;
+    offY = (rect.height - dispH) / 2;
+  }
+  return { dispW: dispW, dispH: dispH, offX: offX, offY: offY, rect: rect };
+}
+
+function updateRuler() {
+  const ruler = $("year-ruler");
+  if (!ruler) return;
+  const current = SCENES[state.scene];
+  if (current && current.noYears) { ruler.innerHTML = ""; return; }
+  const frame = visibleSvgFrame();
+  const toPx = (x) => frame.offX + ((x - state.camera.x) / state.camera.w) * frame.dispW;
+  let html = "";
+  ERAS.forEach((era) => {
+    const a = Math.max(8, toPx(era.x0));
+    const b = Math.min(frame.rect.width - 8, toPx(era.x1));
+    if (b - a < 60) return;
+    html += '<span class="era" style="left:' + a.toFixed(1) + "px;width:" + (b - a).toFixed(1) + 'px">' + era.label + "</span>";
+  });
+  ruler.innerHTML = html;
+}
+
+function updateRail(people, items) {
+  const rail = $("person-rail");
+  if (!rail) return;
+  const list = (people || []).map((id) => PEOPLE[id]).filter(Boolean).concat(items || []);
+  rail.innerHTML = list.map((p) => '<div class="rail-item"><i style="background:' + p.color + '"></i>' + p.name + "</div>").join("");
+  if (list.length) rail.classList.remove("is-empty");
+  else rail.classList.add("is-empty");
+}
+
+function setHidden(node, hidden) {
+  if (!node) return;
+  if (hidden) node.classList.add("is-hidden-vis");
+  else node.classList.remove("is-hidden-vis");
+}
+
+function closePanels(except) {
+  ["legend", "notes", "help", "index"].forEach((name) => {
+    if (name === except) return;
+    setPanel(name, false, { fromAuto: name === "legend" && state.legendAuto });
+  });
+}
+
+function setPanel(name, open, opts) {
+  opts = opts || {};
+  state[name] = open;
+  const panel = $("panel-" + name);
+  if (panel) panel.hidden = !open;
+  const btn = $("btn-" + name);
+  if (btn) btn.setAttribute("aria-pressed", open ? "true" : "false");
+  if (name === "legend") {
+    if (open && opts.auto) state.legendAuto = true;
+    if (!open) state.legendAuto = false;
+  }
+}
+
+function updateChrome() {
+  const total = SCENES.length;
+  const scene = SCENES[state.scene];
+  $("progress-label").textContent = (state.scene + 1) + " / " + total;
+  $("btn-back").disabled = !state.explore && state.scene <= 0;
+  $("btn-next").disabled = !state.explore && state.scene >= total - 1;
+  const dots = $("progress-dots").querySelectorAll("button");
+  for (let i = 0; i < dots.length; i++) {
+    if (i === state.scene) dots[i].setAttribute("aria-current", "true");
+    else dots[i].removeAttribute("aria-current");
+  }
+  const indexBtns = $("scene-index-list").querySelectorAll("button");
+  for (let i = 0; i < indexBtns.length; i++) {
+    if (i === state.scene) indexBtns[i].setAttribute("aria-current", "true");
+    else indexBtns[i].removeAttribute("aria-current");
+  }
+  $("notes-body").textContent = scene.notes || "";
+  const motionBtn = $("btn-motion");
+  const reduced = prefersReduced();
+  motionBtn.setAttribute("aria-pressed", reduced ? "true" : "false");
+  motionBtn.textContent = reduced ? "Reduce motion: on" : "Motion";
+  document.documentElement.classList.toggle("reduce-motion", !!state.reducedOverride);
+  $("live").textContent = state.explore ? ("Looking closer: " + state.explore) : scene.title;
+}
+
+function paintOverlay(scene) {
+  $("scene-title").textContent = scene.title;
+  $("scene-narration").textContent = scene.narration || "";
+  setHidden($("scene-narration"), !!state.explore);
+  setHidden($("explore-detail"), !state.explore);
+  if (scene.question) {
+    $("scene-question").textContent = scene.question;
+    setHidden($("scene-question"), false);
+  } else {
+    $("scene-question").textContent = "";
+    setHidden($("scene-question"), true);
+  }
+  if (scene.action && !state.explore) {
+    $("scene-action").textContent = scene.action;
+    setHidden($("scene-action"), false);
+  } else {
+    $("scene-action").textContent = "";
+    setHidden($("scene-action"), true);
+  }
+  setHidden($("explore-bar"), !state.explore);
+}
+
+function applyScene(index, opts) {
+  opts = opts || {};
+  const nextIndex = clamp(index, 0, SCENES.length - 1);
+  const scene = SCENES[nextIndex];
+  const prevIndex = state.scene;
+  state.scene = nextIndex;
+  state.explore = null;
+  applyLayers(scene.show);
+  applyHighlights(scene.highlight || []);
+  updateRail(scene.people || [], scene.railItems || []);
+  paintOverlay(scene);
+
+  const forward = nextIndex === prevIndex + 1;
+  const vb = resolveView(scene.view);
+  const ms = opts.instant ? 0 : durationFor(state.camera, vb);
+  animateCamera(vb, ms);
+  startGrow(scene, prefersReduced() ? 0 : ms, forward && !opts.instant);
+  updateChrome();
+}
+
+function findEvent(id) {
+  for (let i = 0; i < EVENTS.length; i++) if (EVENTS[i].id === id) return EVENTS[i];
+  return null;
+}
+
+function exploreEvent(id) {
+  const ev = findEvent(id);
+  if (!ev) return;
+  const node = svg.querySelector('[data-event="' + id + '"]');
+  if (node && node.classList.contains("is-hidden")) return;
+  state.explore = id;
+  const pt = eventPoint(ev);
+  const pad = ev.explorePad || null;
+  animateCamera(resolveView({
+    points: [[pt.x, pt.y]],
+    padX: pad ? pad[0] : 150,
+    padY: pad ? pad[1] : 120
+  }), prefersReduced() ? 0 : 820);
+  $("scene-title").textContent = ev.label;
+  $("explore-detail").textContent = ev.detail || "";
+  $("explore-label").textContent = "Looking closer · click to return anytime";
+  setHidden($("scene-narration"), true);
+  setHidden($("explore-detail"), false);
+  setHidden($("scene-question"), true);
+  setHidden($("scene-action"), true);
+  setHidden($("explore-bar"), false);
+  applyHighlights([id]);
+  updateChrome();
+}
+
+function returnToPresentation() {
+  applyScene(state.scene, { instant: prefersReduced() });
+}
+
+function goNext() {
+  if (state.explore && state.scene >= SCENES.length - 1) {
+    applyScene(state.scene);
+    return;
+  }
+  applyScene(state.scene + 1);
+}
+
+function goBack() {
+  if (state.explore && state.scene <= 0) {
+    applyScene(0);
+    return;
+  }
+  applyScene(state.scene - 1);
+}
+
+function restart() {
+  closePanels();
+  applyScene(0, { instant: prefersReduced() });
+}
+
+function toggleMotion() {
+  state.reducedOverride = !prefersReduced();
+  document.documentElement.classList.toggle("reduce-motion", state.reducedOverride);
+  updateChrome();
+}
+
+function toggleFullscreen() {
+  const root = document.documentElement;
+  if (!document.fullscreenElement && root.requestFullscreen) root.requestFullscreen();
+  else if (document.exitFullscreen && document.fullscreenElement) document.exitFullscreen();
+}
+
+function isTypingTarget(el) {
+  if (!el || !el.tagName) return false;
+  const tag = el.tagName;
+  return tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT" || !!el.isContentEditable;
+}
+
+function isButtonTarget(el) {
+  if (!el || !el.tagName) return false;
+  const role = typeof el.getAttribute === "function" ? el.getAttribute("role") : "";
+  return el.tagName === "BUTTON" || role === "button";
+}
+
+function handleKey(e) {
+  if (isTypingTarget(e.target)) return false;
+  if (isButtonTarget(e.target) && (e.key === " " || e.key === "Enter" || e.code === "Space")) return false;
+  const key = e.key;
+  if (key === "Escape") {
+    if (state.help || state.legend || state.notes || state.index) {
+      closePanels();
+      if (e.preventDefault) e.preventDefault();
+      return true;
+    }
+    if (state.explore) {
+      returnToPresentation();
+      if (e.preventDefault) e.preventDefault();
+      return true;
+    }
+    return false;
+  }
+  if (key === "?" || key === "h" || key === "H") { toggleNamedPanel("help"); if (e.preventDefault) e.preventDefault(); return true; }
+  if (key === "l" || key === "L") { toggleNamedPanel("legend"); if (e.preventDefault) e.preventDefault(); return true; }
+  if (key === "n" || key === "N") { toggleNamedPanel("notes"); if (e.preventDefault) e.preventDefault(); return true; }
+  if (key === "i" || key === "I") { toggleNamedPanel("index"); if (e.preventDefault) e.preventDefault(); return true; }
+  if (key === "m" || key === "M") { toggleMotion(); if (e.preventDefault) e.preventDefault(); return true; }
+  if (key === "f" || key === "F") { toggleFullscreen(); if (e.preventDefault) e.preventDefault(); return true; }
+  if (key === "r" || key === "R") { restart(); if (e.preventDefault) e.preventDefault(); return true; }
+  if (key === "ArrowRight" || key === "PageDown" || key === " " || key === "Spacebar" || e.code === "Space") {
+    goNext();
+    if (e.preventDefault) e.preventDefault();
+    return true;
+  }
+  if (key === "ArrowLeft" || key === "PageUp") {
+    goBack();
+    if (e.preventDefault) e.preventDefault();
+    return true;
+  }
+  return false;
+}
+
+function toggleNamedPanel(name) {
+  const next = !state[name];
+  if (next) closePanels(name);
+  setPanel(name, next);
+}
+
+function bind() {
+  $("btn-next").addEventListener("click", goNext);
+  $("btn-back").addEventListener("click", goBack);
+  $("btn-return").addEventListener("click", returnToPresentation);
+  $("btn-help").addEventListener("click", () => toggleNamedPanel("help"));
+  $("btn-legend").addEventListener("click", () => toggleNamedPanel("legend"));
+  $("btn-notes").addEventListener("click", () => toggleNamedPanel("notes"));
+  $("btn-index").addEventListener("click", () => toggleNamedPanel("index"));
+  $("btn-motion").addEventListener("click", toggleMotion);
+  $("btn-full").addEventListener("click", toggleFullscreen);
+  document.querySelectorAll("[data-close]").forEach((btn) => {
+    btn.addEventListener("click", () => setPanel(btn.getAttribute("data-close"), false));
+  });
+  ["legend", "notes", "help", "index"].forEach((name) => {
+    const panel = $("panel-" + name);
+    panel.addEventListener("click", (e) => {
+      if (e.target === panel) setPanel(name, false);
+    });
+  });
+  document.addEventListener("keydown", handleKey);
+  window.addEventListener("resize", updateScaleDependent);
+}
+
+function buildIndex() {
+  const list = $("scene-index-list");
+  const dots = $("progress-dots");
+  list.innerHTML = "";
+  dots.innerHTML = "";
+  SCENES.forEach((scene, i) => {
+    const item = document.createElement("li");
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.innerHTML = "<em>" + (i + 1) + "</em>" + scene.title;
+    btn.addEventListener("click", () => {
+      setPanel("index", false);
+      applyScene(i);
+    });
+    item.appendChild(btn);
+    list.appendChild(item);
+
+    const dot = document.createElement("button");
+    dot.type = "button";
+    dot.setAttribute("aria-label", "Go to scene " + (i + 1) + ": " + scene.title);
+    dot.addEventListener("click", () => applyScene(i));
+    dots.appendChild(dot);
+  });
+}
+
+function getState() {
+  return {
+    scene: state.scene,
+    sceneId: SCENES[state.scene].id,
+    explore: state.explore,
+    legend: state.legend,
+    notes: state.notes,
+    help: state.help,
+    index: state.index,
+    reduced: prefersReduced(),
+    viewBox: { x: state.camera.x, y: state.camera.y, w: state.camera.w, h: state.camera.h },
+    title: $("scene-title") ? $("scene-title").textContent : "",
+    question: $("scene-question") ? $("scene-question").textContent : "",
+    action: $("scene-action") && !$("scene-action").classList.contains("is-hidden-vis") ? $("scene-action").textContent : ""
+  };
+}
+
+function init() {
+  els = { svg: $("world") };
+  renderWorld();
+  buildIndex();
+  bind();
+  const first = resolveView(SCENES[0].view);
+  setViewBox(first);
+  applyScene(0, { instant: true });
+}
+
+globalThis.Lifelines = {
+  META, PEOPLE, EVENTS, SCENES, ORDINARY, BRANCHES, ANNOTATIONS, WORLD, LEHI, ERAS, GENERATIONS, buildGenerationRows, labelBox,
+  xYear, resolveView, durationFor, easeInOutSine, eventPoint,
+  getState, applyScene, goNext, goBack, restart, exploreEvent, hideOverflowingLabels,
+  returnToPresentation, handleKey, prefersReduced, toggleMotion,
+  setReducedMotion: function (on) { state.reducedOverride = !!on; updateChrome(); },
+  init,
+  get internalState() { return state; }
+};
+
+if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
+else init();
+  </script>
+</body>
+</html>
