@@ -11,8 +11,8 @@
   <link rel="manifest" href="manifest.webmanifest" />
   <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png" />
   <meta name="color-scheme" content="light" />
-  <title>Lifelines — Lehi’s Family (v1.10)</title>
-  <!-- lifelines build v1.10 -->
+  <title>Lifelines — Lehi’s Family (v1.11)</title>
+  <!-- lifelines build v1.11 -->
   <style>
     :root {
       --bg: #f3eadc;
@@ -651,6 +651,22 @@
       0%, 100% { opacity: 0.85; transform: scale(1); }
       50% { opacity: 0.25; transform: scale(1.22); }
     }
+  
+    /* v1.11 scripture links: same color, dotted underline */
+    a.cite, a.cite:visited {
+      color: inherit;
+      text-decoration: underline dotted;
+      text-decoration-thickness: 1px;
+      text-underline-offset: 2px;
+      cursor: pointer;
+    }
+    a.cite:hover { text-decoration-style: solid; }
+    a.cite:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 2px; }
+    #year-ruler a.cite { pointer-events: auto; }
+    #world a.cite { text-decoration: underline dotted; cursor: pointer; }
+    #world .event-caption { pointer-events: none; }
+    #world .event.is-highlight .event-caption,
+    #world.tight-captions .event-caption { pointer-events: auto; }
   </style>
 </head>
 <body>
@@ -692,7 +708,7 @@
         <button type="button" class="btn btn-primary" id="btn-next">Next</button>
       </div>
       <div class="rotate-hint ui">Turn your phone sideways for a larger view · swipe to change scenes</div>
-      <div class="disclaimer">Lehi’s family from the Book of Mormon; time is schematic and dates approximate. Branches are possibilities, not predictions. Covenants connect us to Christ; they do not erase hardship. <span id="build-version">v1.10</span></div>
+      <div class="disclaimer">Lehi’s family from the Book of Mormon; time is schematic and dates approximate. Branches are possibilities, not predictions. Covenants connect us to Christ; they do not erase hardship. <span id="build-version">v1.11</span></div>
     </footer>
   </div>
 
@@ -712,7 +728,7 @@
         </li>
         <li>
           <svg viewBox="-12 -12 24 24" aria-hidden="true"><rect x="-6" y="-6" width="12" height="12" rx="2" fill="#2f7d4a"/></svg>
-          <div><strong>Green square — want, hunger, or illness</strong><span>Not enough to eat, exhaustion, or sickness — like the hunger at the broken bow (1 Ne 16:18–20) or sick-beds of grief (18:17–18).</span></div>
+          <div><strong>Green square — want, hunger, or illness</strong><span>Not enough to eat, exhaustion, or sickness — like the hunger at the broken bow (<a class="cite" href="https://www.churchofjesuschrist.org/study/scriptures/bofm/1-ne/16?lang=eng&amp;id=p18-p20#p18" target="_blank" rel="noopener">1 Ne 16:18–20</a>) or sick-beds of grief (<a class="cite" href="https://www.churchofjesuschrist.org/study/scriptures/bofm/1-ne/18?lang=eng&amp;id=p17-p18#p17" target="_blank" rel="noopener">18:17–18</a>).</span></div>
         </li>
         <li>
           <svg viewBox="-12 -12 24 24" aria-hidden="true"><path d="M0 6 C0 6 -9 -1 -9 -5.2 C-9 -8.2 -6.6 -10 -4.2 -10 C-2.2 -10 0 -8.6 0 -7 C0 -8.6 2.2 -10 4.2 -10 C6.6 -10 9 -8.2 9 -5.2 C9 -1 0 6 0 6Z" fill="#d26a8c"/></svg>
@@ -724,7 +740,7 @@
         </li>
         <li>
           <svg viewBox="-12 -12 24 24" aria-hidden="true"><circle r="7" fill="#fbf6ee" stroke="#8a4b2c" stroke-width="2"/><circle r="3" fill="#8a4b2c"/></svg>
-          <div><strong>Ringed dot — revelation</strong><span>A vision, dream, witness, or direction from the Lord. Mothers receive revelation too (1 Ne 5:8).</span></div>
+          <div><strong>Ringed dot — revelation</strong><span>A vision, dream, witness, or direction from the Lord. Mothers receive revelation too (<a class="cite" href="https://www.churchofjesuschrist.org/study/scriptures/bofm/1-ne/5?lang=eng&amp;id=p8#p8" target="_blank" rel="noopener">1 Ne 5:8</a>).</span></div>
         </li>
         <li>
           <svg viewBox="-12 -12 24 24" aria-hidden="true"><circle r="6" fill="#fbf6ee" stroke="#7a6f62" stroke-width="2"/></svg>
@@ -736,15 +752,15 @@
         </li>
         <li>
           <svg viewBox="-12 -12 24 24" aria-hidden="true"><path d="M0 -8 L2.3 -2.6 L8 -2.5 L3.4 1.2 L5.1 6.8 L0 3.6 L-5.1 6.8 L-3.4 1.2 L-8 -2.5 L-2.3 -2.6 Z" fill="#3d6f9a"/></svg>
-          <div><strong>Blue star — children</strong><span>A child’s arrival, like Jacob and Joseph born in the wilderness (1 Ne 18:7). Color marks generation, not gender.</span></div>
+          <div><strong>Blue star — children</strong><span>A child’s arrival, like Jacob and Joseph born in the wilderness (<a class="cite" href="https://www.churchofjesuschrist.org/study/scriptures/bofm/1-ne/18?lang=eng&amp;id=p7#p7" target="_blank" rel="noopener">1 Ne 18:7</a>). Color marks generation, not gender.</span></div>
         </li>
         <li>
           <svg viewBox="-12 -12 24 24" aria-hidden="true"><path d="M0 -8 L2.3 -2.6 L8 -2.5 L3.4 1.2 L5.1 6.8 L0 3.6 L-5.1 6.8 L-3.4 1.2 L-8 -2.5 L-2.3 -2.6 Z" fill="#c47a9a"/></svg>
-          <div><strong>Pink star — grandchildren</strong><span>Lehi’s grandchildren, whom he blessed (2 Ne 4:3–9).</span></div>
+          <div><strong>Pink star — grandchildren</strong><span>Lehi’s grandchildren, whom he blessed (<a class="cite" href="https://www.churchofjesuschrist.org/study/scriptures/bofm/2-ne/4?lang=eng&amp;id=p3-p9#p3" target="_blank" rel="noopener">2 Ne 4:3–9</a>).</span></div>
         </li>
         <li>
           <svg viewBox="-14 -14 28 28" aria-hidden="true"><path d="M0 -11 L9 -7.5 V2 C9 8 0 12 0 12 C0 12 -9 8 -9 2 V-7.5 Z" fill="#7a6236"/></svg>
-          <div><strong>Shield — sacred moments</strong><span>An altar and offerings (1 Ne 2:7; 5:9), a father’s blessings (2 Ne 1–4), consecration to serve (2 Ne 5:26), and the temple Nephi built (2 Ne 5:16). They connect people to Christ; they do not prevent hardship.</span></div>
+          <div><strong>Shield — sacred moments</strong><span>An altar and offerings (<a class="cite" href="https://www.churchofjesuschrist.org/study/scriptures/bofm/1-ne/2?lang=eng&amp;id=p7#p7" target="_blank" rel="noopener">1 Ne 2:7</a>; <a class="cite" href="https://www.churchofjesuschrist.org/study/scriptures/bofm/1-ne/5?lang=eng&amp;id=p9#p9" target="_blank" rel="noopener">5:9</a>), a father’s blessings (<a class="cite" href="https://www.churchofjesuschrist.org/study/scriptures/bofm/2-ne/1?lang=eng" target="_blank" rel="noopener">2 Ne 1–4</a>), consecration to serve (<a class="cite" href="https://www.churchofjesuschrist.org/study/scriptures/bofm/2-ne/5?lang=eng&amp;id=p26#p26" target="_blank" rel="noopener">2 Ne 5:26</a>), and the temple Nephi built (<a class="cite" href="https://www.churchofjesuschrist.org/study/scriptures/bofm/2-ne/5?lang=eng&amp;id=p16#p16" target="_blank" rel="noopener">2 Ne 5:16</a>). They connect people to Christ; they do not prevent hardship.</span></div>
         </li>
       </ul>
       <p>Positions are schematic: time runs left to right but is not to scale, and dates are approximate.</p>
@@ -758,7 +774,7 @@
         <button type="button" class="icon-btn" data-close="notes" aria-label="Close notes">×</button>
       </header>
       <p id="notes-body"></p>
-      <p>Optional references, without quotation here: Mosiah 18:8–10; Alma 7:11–12; Doctrine and Covenants 121:41–46.</p>
+      <p>Optional references, without quotation here: <a class="cite" href="https://www.churchofjesuschrist.org/study/scriptures/bofm/mosiah/18?lang=eng&amp;id=p8-p10#p8" target="_blank" rel="noopener">Mosiah 18:8–10</a>; <a class="cite" href="https://www.churchofjesuschrist.org/study/scriptures/bofm/alma/7?lang=eng&amp;id=p11-p12#p11" target="_blank" rel="noopener">Alma 7:11–12</a>; <a class="cite" href="https://www.churchofjesuschrist.org/study/scriptures/dc-testament/dc/121?lang=eng&amp;id=p41-p46#p41" target="_blank" rel="noopener">Doctrine and Covenants 121:41–46</a>.</p>
     </div>
   </div>
 
@@ -768,7 +784,7 @@
         <h2 id="help-title">How to use this teaching</h2>
         <button type="button" class="icon-btn" data-close="help" aria-label="Close help">×</button>
       </header>
-      <p>This is one continuous picture, not a stack of separate slides. The camera pans and zooms through a shared world of lifelines. It follows Lehi’s family from the Book of Mormon (1 Nephi 1 – 2 Nephi 5), then pulls back to a field of the generations that followed. Every mark cites its verses; time is schematic and not to scale.</p>
+      <p>This is one continuous picture, not a stack of separate slides. The camera pans and zooms through a shared world of lifelines. It follows Lehi’s family from the Book of Mormon (<a class="cite" href="https://www.churchofjesuschrist.org/study/scriptures/bofm/1-ne/1?lang=eng" target="_blank" rel="noopener">1 Nephi 1</a> – <a class="cite" href="https://www.churchofjesuschrist.org/study/scriptures/bofm/2-ne/5?lang=eng" target="_blank" rel="noopener">2 Nephi 5</a>), then pulls back to a field of the generations that followed. Every mark cites its verses; time is schematic and not to scale.</p>
       <ul class="help-list">
         <li><div><strong>Move through the presentation</strong><span><kbd>→</kbd> <kbd>Space</kbd> <kbd>Page Down</kbd> or Next. <kbd>←</kbd> <kbd>Page Up</kbd> or Back. A clicker should work the same way. On a phone or tablet, swipe left or right on the picture.</span></div></li>
         <li><div><strong>Look closer</strong><span>Click a highlighted event to zoom in. Use <em>Return to presentation</em> when you are ready to continue the guided path.</span></div></li>
@@ -809,7 +825,7 @@ const META = {
   title: "Lifelines",
   audience: "PP6 elders quorum",
   disclaimer: "Lehi’s family from the Book of Mormon. Schematic time, not to scale.",
-  build: "v1.10"
+  build: "v1.11"
 };
 
 /* World coordinates: x = schematic time t (0–100) for the family story,
@@ -1052,7 +1068,7 @@ const EVENTS = [
   { id: "lehi-pleads", person: null, year: 0, x: 2285, y: 2377, type: "vision", layer: "lehi", label: "Lehi keeps pleading (8:36–37)", labelDx: -640, labelDy: 12, explorePad: [620, 260], detail: "Lehi fears for them and exhorts them with all the feeling of a tender parent (1 Nephi 8:36–37). His love keeps reaching toward sons who said no." }
 ];
 
-/* Kept for compatibility; v1.10 draws no invented "ordinary life" marks. */
+/* Kept for compatibility; v1.11 draws no invented "ordinary life" marks. */
 const ORDINARY = [];
 
 /* Possible branches from the hunger moment on Lehi's line (teaching device). */
@@ -1374,6 +1390,156 @@ function svgEl(name, attrs, parent) {
   return node;
 }
 
+/* ---- Scripture links (v1.11) ----
+   Every citation links to the Church's Gospel Library site. Shorthand such as
+   "(16:20)" takes its book from the nearest earlier book in the same string,
+   else the first book later in the string, else the caller's fallback book. */
+const CITE_BASE = "https://www.churchofjesuschrist.org/study/scriptures/";
+const CITE_BOOKS = [
+  // [names (longest first within each), volume/slug, chapter-only references allowed]
+  [["1 Nephi", "1 Ne"], "bofm/1-ne", true], [["2 Nephi", "2 Ne"], "bofm/2-ne", true],
+  [["3 Nephi", "3 Ne"], "bofm/3-ne", true], [["4 Nephi", "4 Ne"], "bofm/4-ne", true],
+  [["Jacob"], "bofm/jacob", false], [["Enos"], "bofm/enos", false],
+  [["Words of Mormon", "W of M"], "bofm/w-of-m", false], [["Mosiah"], "bofm/mosiah", false],
+  [["Alma"], "bofm/alma", false], [["Helaman", "Hel"], "bofm/hel", false],
+  [["Mormon", "Morm"], "bofm/morm", false], [["Ether"], "bofm/ether", false],
+  [["Moroni", "Moro"], "bofm/moro", false],
+  [["Doctrine and Covenants", "D&C"], "dc-testament/dc", true],
+  [["Joseph Smith—History", "JS—H", "JS-H"], "pgp/js-h", true],
+  [["Moses"], "pgp/moses", false], [["Abraham", "Abr"], "pgp/abr", false],
+  [["Genesis", "Gen"], "ot/gen", false], [["Exodus", "Ex"], "ot/ex", false],
+  [["Deuteronomy", "Deut"], "ot/deut", false], [["Psalms", "Psalm", "Ps"], "ot/ps", false],
+  [["Proverbs", "Prov"], "ot/prov", false], [["Isaiah", "Isa"], "ot/isa", false],
+  [["Jeremiah", "Jer"], "ot/jer", false], [["Malachi", "Mal"], "ot/mal", false],
+  [["Matthew", "Matt"], "nt/matt", false], [["Mark"], "nt/mark", false], [["Luke"], "nt/luke", false],
+  [["John"], "nt/john", false], [["Acts"], "nt/acts", false], [["Romans", "Rom"], "nt/rom", false],
+  [["1 Corinthians", "1 Cor"], "nt/1-cor", true], [["2 Corinthians", "2 Cor"], "nt/2-cor", true],
+  [["Galatians", "Gal"], "nt/gal", false], [["Ephesians", "Eph"], "nt/eph", false],
+  [["Hebrews", "Heb"], "nt/heb", false], [["James"], "nt/james", false],
+  [["1 John"], "nt/1-jn", true], [["Revelation", "Rev"], "nt/rev", false]
+];
+const CITE_NAME = {};
+CITE_BOOKS.forEach((b) => b[0].forEach((n) => { CITE_NAME[n] = b; }));
+const CITE_NAMES_RE = Object.keys(CITE_NAME).sort((a, b) => b.length - a.length)
+  .map((n) => n.replace(/[.*+?^${}()|[\]\\]/g, "\\$&").replace(/ /g, "\\s")).join("|");
+// group 1 book, 2 chapter, 3 verse, 4 verse end, 5 chapter-range end, 6 verse at chapter-range end  |  7 ch, 8 v, 9 v-end (shorthand)
+const CITE_RE = new RegExp(
+  "(?:\\b(" + CITE_NAMES_RE + ")\\.?\\s(\\d{1,3})(?::(\\d{1,3})(?:[–-](\\d{1,3}))?|[–-](\\d{1,3})(?::(\\d{1,3}))?)?)" +
+  "|(?:(\\d{1,3}):(\\d{1,3})(?:[–-](\\d{1,3}))?)", "g");
+
+function citeUrl(path, ch, v1, v2) {
+  let url = CITE_BASE + path + "/" + ch + "?lang=eng";
+  if (v1) url += "&id=p" + v1 + (v2 ? "-p" + v2 : "") + "#p" + v1;
+  return url;
+}
+
+function citeBookPath(nameOrPath) {
+  if (!nameOrPath) return null;
+  if (CITE_NAME[nameOrPath]) return CITE_NAME[nameOrPath][1];
+  return nameOrPath.indexOf("/") > 0 ? nameOrPath : "bofm/" + nameOrPath;
+}
+
+/* First book named in a string (used as a fallback for shorthand elsewhere). */
+function citeFirstBook(text) {
+  const re = new RegExp("\\b(" + CITE_NAMES_RE + ")\\.?\\s\\d", "g");
+  const m = re.exec(String(text || ""));
+  return m ? CITE_NAME[m[1].replace(/\s/g, " ")][1] : null;
+}
+
+/* Split text into [{text}] and [{text, url}] segments. */
+function citeSegments(text, fallbackBook) {
+  text = String(text == null ? "" : text);
+  const out = [];
+  const push = (t, url) => { if (t) out.push(url ? { text: t, url: url } : { text: t }); };
+  let book = null, chapter = null, last = 0, m;
+  const later = citeFirstBook(text);
+  const fallback = citeBookPath(fallbackBook) || "bofm/1-ne";
+  CITE_RE.lastIndex = 0;
+  while ((m = CITE_RE.exec(text))) {
+    const start = m.index;
+    const prev = start > 0 ? text.charAt(start - 1) : "";
+    let url = null, end = CITE_RE.lastIndex, verseCtx = false;
+    if (m[1]) {
+      const entry = CITE_NAME[m[1].replace(/\s/g, " ")];
+      if (!m[3] && !entry[2]) continue;            // e.g. "Jacob 2" without a verse: not a citation
+      book = entry[1]; chapter = m[2];
+      url = citeUrl(book, m[2], m[3], m[4]);
+      verseCtx = !!m[3];
+    } else {
+      if (/[\w.:\/]/.test(prev)) continue;          // part of something else (times, versions)
+      chapter = m[7];
+      url = citeUrl(book || later || fallback, m[7], m[8], m[9]);
+      verseCtx = true;
+    }
+    push(text.slice(last, start));
+    push(text.slice(start, end), url);
+    last = end;
+    // Continuations in the same chapter: ", 21" or ", 26–28" (not followed by ":")
+    // and chapter lists: "1 Nephi 8 and 11".
+    const bk = book || later || fallback;
+    for (;;) {
+      const rest = text.slice(last);
+      let c;
+      if (verseCtx && (c = /^(,\s?)(\d{1,3})(?:[–-](\d{1,3}))?(?![\d:])/.exec(rest))) {
+        push(c[1]);
+        push(c[0].slice(c[1].length), citeUrl(bk, chapter, c[2], c[3]));
+        last += c[0].length;
+      } else if (!verseCtx && (c = /^(\s(?:and|&)\s)(\d{1,3})(?![\d:])/.exec(rest))) {
+        push(c[1]);
+        push(c[2], citeUrl(bk, c[2]));
+        chapter = c[2];
+        last += c[0].length;
+      } else break;
+    }
+    CITE_RE.lastIndex = last;
+  }
+  push(text.slice(last));
+  return out;
+}
+
+function citeEsc(s) {
+  return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+}
+
+/* HTML string with links (for innerHTML spots and the static markup). */
+function citeHTML(text, fallbackBook) {
+  return citeSegments(text, fallbackBook).map((s) => s.url
+    ? '<a class="cite" href="' + citeEsc(s.url) + '" target="_blank" rel="noopener">' + citeEsc(s.text) + "</a>"
+    : citeEsc(s.text)).join("");
+}
+
+/* Keep a link tap from changing scenes, exploring an event, collapsing the header, or swiping. */
+function guardLink(a) {
+  if (!a || a._citeGuard) return a;
+  a._citeGuard = true;
+  ["click", "pointerdown", "mousedown", "touchstart", "touchend"].forEach((type) => {
+    a.addEventListener(type, (e) => { if (e && e.stopPropagation) e.stopPropagation(); }, type.indexOf("touch") === 0 ? { passive: true } : false);
+  });
+  return a;
+}
+
+/* Replace an element's text with text + links. In SVG, links are <a href> inside the text. */
+function setCiteText(el, text, fallbackBook) {
+  if (!el) return el;
+  const isSvg = el.namespaceURI === NS;
+  el.textContent = "";
+  citeSegments(text, fallbackBook).forEach((s) => {
+    if (!s.url) { el.appendChild(document.createTextNode(s.text)); return; }
+    const a = isSvg ? document.createElementNS(NS, "a") : document.createElement("a");
+    a.setAttribute("href", s.url);
+    a.setAttribute("target", "_blank");
+    a.setAttribute("rel", "noopener");
+    a.setAttribute("class", "cite");
+    a.textContent = s.text;
+    el.appendChild(guardLink(a));
+  });
+  return el;
+}
+
+function isLinkTarget(el) {
+  return !!(el && el.tagName && String(el.tagName).toUpperCase() === "A");
+}
+
 function starPath(r) {
   const pts = [];
   for (let i = 0; i < 10; i++) {
@@ -1612,7 +1778,7 @@ function renderWorld() {
   const originMark = svgEl("g", { transform: "translate(" + origin.x + "," + origin.y + ")" }, branches);
   drawShape(originMark, "want", { noRing: true });
   const originCap = svgEl("text", { x: origin.x - 14, y: origin.y + 36, class: "note-label scale-ann", "text-anchor": "end" }, branches);
-  originCap.textContent = "Hunger; Lehi murmurs too (16:20)";
+  setCiteText(originCap, "Hunger; Lehi murmurs too (16:20)", "1-ne");
   const banner = svgEl("text", { x: origin.x + 30, y: origin.y - 150, class: "banner-label scale-banner" }, branches);
   banner.textContent = "POSSIBLE CONSEQUENCES — NOT PREDICTIONS";
   BRANCHES.forEach((branch) => {
@@ -1625,9 +1791,9 @@ function renderWorld() {
     }, branches);
     svgEl("circle", { cx: pts[2][0], cy: pts[2][1], r: 3, fill: branch.color, opacity: "0.45" }, branches);
     const a = svgEl("text", { x: pts[2][0] + 14, y: pts[2][1] - 4, class: "note-label scale-ann", fill: branch.color }, branches);
-    a.textContent = branch.label;
+    setCiteText(a, branch.label, "1-ne");
     const b = svgEl("text", { x: pts[2][0] + 14, y: pts[2][1] + 22, class: "branch-sub scale-note", fill: branch.color }, branches);
-    b.textContent = branch.consequence;
+    setCiteText(b, branch.consequence, "1-ne");
   });
   const unfinished = svgEl("text", { x: origin.x + 30, y: origin.y + 240, class: "branch-sub scale-note" }, branches);
   unfinished.textContent = "All paths unfinished. None guaranteed. Lehi’s actual line stays separate.";
@@ -1656,12 +1822,13 @@ function renderWorld() {
       "data-note": note.id
     }, g);
     const lines = note.lines || (note.text ? [note.text] : []);
+    const noteBook = citeFirstBook(lines.join(" ")) || note.book || "1-ne";
     if (lines.length <= 1) {
-      t.textContent = lines[0] || "";
+      setCiteText(t, lines[0] || "", noteBook);
     } else {
       lines.forEach((line, i) => {
         const span = svgEl("tspan", { x: note.x, dy: i === 0 ? "0" : String(note.lineHeight || 22) }, t);
-        span.textContent = line;
+        setCiteText(span, line, noteBook);
       });
     }
   });
@@ -1718,7 +1885,7 @@ function renderWorld() {
       y: ev.labelDy || -18,
       "text-anchor": endAnchor ? "end" : "start"
     }, g);
-    label.textContent = ev.label;
+    setCiteText(label, ev.label, citeFirstBook(ev.detail));
     g.addEventListener("click", (e) => {
       e.stopPropagation();
       exploreEvent(ev.id);
@@ -1915,7 +2082,7 @@ function renderLehi() {
   const g = svgEl("g", { "data-layer": "lehi", class: "layer" }, svg);
   function text(x, y, str, cls, anchor) {
     const node = svgEl("text", { x: x, y: y, class: cls, "text-anchor": anchor || "start" }, g);
-    node.textContent = str;
+    setCiteText(node, str, "1-ne");
     return node;
   }
   const defs = svg.querySelector("defs") || svgEl("defs", null, svg);
@@ -2155,7 +2322,7 @@ function updateRuler() {
   const ruler = $("year-ruler");
   if (!ruler) return;
   const current = SCENES[state.scene];
-  if (current && current.noYears) { ruler.innerHTML = ""; return; }
+  if (current && current.noYears) { ruler.innerHTML = ""; ruler._lastHtml = ""; return; }
   const frame = visibleSvgFrame();
   const toPx = (x) => frame.offX + ((x - state.camera.x) / state.camera.w) * frame.dispW;
   let html = "";
@@ -2163,9 +2330,9 @@ function updateRuler() {
     const a = Math.max(8, toPx(era.x0));
     const b = Math.min(frame.rect.width - 8, toPx(era.x1));
     if (b - a < 60) return;
-    html += '<span class="era" style="left:' + a.toFixed(1) + "px;width:" + (b - a).toFixed(1) + 'px">' + era.label + "</span>";
+    html += '<span class="era" style="left:' + a.toFixed(1) + "px;width:" + (b - a).toFixed(1) + 'px">' + citeHTML(era.label) + "</span>";
   });
-  ruler.innerHTML = html;
+  if (ruler._lastHtml !== html) { ruler.innerHTML = html; ruler._lastHtml = html; }
 }
 
 function updateRail(people, items) {
@@ -2219,7 +2386,7 @@ function updateChrome() {
     if (i === state.scene) indexBtns[i].setAttribute("aria-current", "true");
     else indexBtns[i].removeAttribute("aria-current");
   }
-  $("notes-body").textContent = scene.notes || "";
+  setCiteText($("notes-body"), scene.notes || "", sceneBook(scene));
   const motionBtn = $("btn-motion");
   const reduced = prefersReduced();
   motionBtn.setAttribute("aria-pressed", reduced ? "true" : "false");
@@ -2236,21 +2403,26 @@ function setHeaderExpanded(open) {
   if (t && t.setAttribute) t.setAttribute("aria-expanded", open ? "true" : "false");
 }
 
+/* A scene's book, for shorthand like "(16:24)" in its narration or notes. */
+function sceneBook(scene) {
+  return citeFirstBook(scene && scene.narration) || citeFirstBook(scene && scene.notes) || "1-ne";
+}
+
 function paintOverlay(scene) {
   setHeaderExpanded(false);   // arriving on a scene: slim header on short screens
-  $("scene-title").textContent = scene.title;
-  $("scene-narration").textContent = scene.narration || "";
+  setCiteText($("scene-title"), scene.title, sceneBook(scene));
+  setCiteText($("scene-narration"), scene.narration || "", sceneBook(scene));
   setHidden($("scene-narration"), !!state.explore);
   setHidden($("explore-detail"), !state.explore);
   if (scene.question) {
-    $("scene-question").textContent = scene.question;
+    setCiteText($("scene-question"), scene.question, sceneBook(scene));
     setHidden($("scene-question"), false);
   } else {
     $("scene-question").textContent = "";
     setHidden($("scene-question"), true);
   }
   if (scene.action && !state.explore) {
-    $("scene-action").textContent = scene.action;
+    setCiteText($("scene-action"), scene.action, sceneBook(scene));
     setHidden($("scene-action"), false);
   } else {
     $("scene-action").textContent = "";
@@ -2297,8 +2469,8 @@ function exploreEvent(id) {
     padX: pad ? pad[0] : 150,
     padY: pad ? pad[1] : 120
   }), prefersReduced() ? 0 : 820);
-  $("scene-title").textContent = ev.label;
-  $("explore-detail").textContent = ev.detail || "";
+  setCiteText($("scene-title"), ev.label, citeFirstBook(ev.detail));
+  setCiteText($("explore-detail"), ev.detail || "", citeFirstBook(ev.label));
   $("explore-label").textContent = "Looking closer · click to return anytime";
   setHidden($("scene-narration"), true);
   setHidden($("explore-detail"), false);
@@ -2361,6 +2533,7 @@ function isButtonTarget(el) {
 function handleKey(e) {
   if (isTypingTarget(e.target)) return false;
   if (isButtonTarget(e.target) && (e.key === " " || e.key === "Enter" || e.code === "Space")) return false;
+  if (isLinkTarget(e.target) && (e.key === " " || e.key === "Enter" || e.code === "Space")) return false;
   const key = e.key;
   if (key === "Escape") {
     if (state.help || state.legend || state.notes || state.index) {
@@ -2424,6 +2597,14 @@ function bind() {
   window.addEventListener("resize", updateScaleDependent);
   window.addEventListener("orientationchange", () => setTimeout(updateScaleDependent, 250));
   bindSwipe($("stage"));
+  document.querySelectorAll("a.cite").forEach(guardLink);
+  const rulerEl = $("year-ruler");
+  ["click", "pointerdown", "mousedown", "touchstart", "touchend"].forEach((type) => {
+    rulerEl.addEventListener(type, (e) => {
+      const t = e && e.target;
+      if (isLinkTarget(t) || (t && t.closest && t.closest("a.cite"))) e.stopPropagation();
+    }, type.indexOf("touch") === 0 ? { passive: true } : false);
+  });
   // Small screens: the header collapses to the title; tap it to read the narration and question.
   $("overlay").addEventListener("click", () => setHeaderExpanded(!$("overlay").classList.contains("is-expanded")));
   $("stage").addEventListener("click", () => { if ($("overlay").classList.contains("is-expanded")) setHeaderExpanded(false); });
@@ -2503,6 +2684,7 @@ function init() {
 }
 
 globalThis.Lifelines = {
+    citeSegments, citeHTML, citeUrl, citeFirstBook, setCiteText, isLinkTarget,
   META, PEOPLE, EVENTS, SCENES, ORDINARY, BRANCHES, ANNOTATIONS, WORLD, LEHI, ERAS, TREE, TREE_DATA, buildTree, labelBox, setTreeLayout,
   xYear, resolveView, durationFor, easeInOutSine, eventPoint,
   getState, applyScene, goNext, goBack, restart, exploreEvent, hideOverflowingLabels,
